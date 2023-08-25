@@ -35,6 +35,7 @@ router.post("/registration/generateOtp", generateOtpValidator, async (req, res) 
         response = await OtpGenerate(req, res);
         res.send(response)
     } catch (error) {
+        
         res.send(errorResponse(500, messages.error.WRONG))
     }
 })

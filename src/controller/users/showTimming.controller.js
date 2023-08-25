@@ -15,8 +15,8 @@ const showTimmings = async (req) => {
     }).select("-_id slot_uuid slot_time");
 
     // Current time is 2:12 PM
-    const currentTime = moment('9:39 AM', 'h:mm A');
-    // const currentTime = moment();
+    // const currentTime = moment('9:39 AM', 'h:mm A');
+    const currentTime = moment();
 
     // Calculate the time one hour from now
     const oneHourFromNow = currentTime.clone().add(59, "minutes");
@@ -60,7 +60,7 @@ const showTimmings = async (req) => {
                         }
                         else {
                             if (j == consecutiveSlotNum - 1) {
-                                console.log("here comes");
+                                // console.log("here comes");
                                 finalSlotArray.push(slots[i])
                             }
                             else {
