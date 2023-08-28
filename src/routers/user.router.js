@@ -12,8 +12,8 @@ const verifyOtp = require("../middleware/users/verifyOTP.joi.validator");
 const loginUser = require("../controller/users/loginUser.controller");
 const loginJoiValidator = require("../middleware/users/login.joi.validator");
 const showTimming = require("../controller/users/showTimming.controller")
-const {createWishList, getWishList, deleteWishList} = require("../controller/users/wishlist.controller")
-const {createFeedback, getFeedback} = require("../controller/users/feedback.controller")
+const { createWishList, getWishList, deleteWishList } = require("../controller/users/wishlist.controller")
+const { createFeedback, getFeedback } = require("../controller/users/feedback.controller")
 const ContactModel = require("../models/users/contactUs.model")
 const HomeServiceModel = require("../models/users/homeService.model")
 const { v4: uuidv4 } = require('uuid');
@@ -35,6 +35,7 @@ router.post("/registration/generateOtp", generateOtpValidator, async (req, res) 
         response = await OtpGenerate(req, res);
         res.send(response)
     } catch (error) {
+        console.log(error)
         res.send(errorResponse(500, messages.error.WRONG))
     }
 })
@@ -73,7 +74,7 @@ router.post("/login/verification", loginJoiValidator, async (req, res) => {
 router.get("/auth-salons", tokenAuthentication, async (req, res) => {
     try {
         const city = req.query.city
-        const salons = await SalonModel.find({salon_city: city}).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const salons = await SalonModel.find({ salon_city: city }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
@@ -83,7 +84,7 @@ router.get("/auth-salons", tokenAuthentication, async (req, res) => {
 router.get("/salons", async (req, res) => {
     try {
         const city = req.query.city
-        const salons = await SalonModel.find({salon_city: city}).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const salons = await SalonModel.find({ salon_city: city }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
@@ -93,14 +94,14 @@ router.get("/salons", async (req, res) => {
 router.get("/search/salon", async (req, res) => {
     try {
         const salonName = req.query.name
-        const salons = await SalonModel.find({"salon_name": { "$regex": salonName, "$options": "i"}}).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const salons = await SalonModel.find({ "salon_name": { "$regex": salonName, "$options": "i" } }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 })
-router.get("/showtimings/:uuid", tokenAuthentication,async (req, res) => {
+router.get("/showtimings/:uuid", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await showTimming(req)
@@ -163,7 +164,7 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
 })
 router.get("/homeService", tokenAuthentication, async (req, res) => {
     try {
-        const homeService = new HomeServiceModel({home_uuid: uuidv4(), home_email: req.email, home_mobile: req.mobile})
+        const homeService = new HomeServiceModel({ home_uuid: uuidv4(), home_email: req.email, home_mobile: req.mobile })
         await homeService.save()
         return res.send(successResponse(201, messages.success.SUCCESS, {}))
     } catch (error) {
@@ -176,7 +177,7 @@ router.post("/contactUs", async (req, res) => {
     const name = req.body.name
     const message = req.body.message
     try {
-        const contact = new ContactModel({contact_uuid: uuidv4(), contact_email: email, contact_name: name, contact_message: message})
+        const contact = new ContactModel({ contact_uuid: uuidv4(), contact_email: email, contact_name: name, contact_message: message })
         await contact.save()
         return res.send(successResponse(201, messages.success.SUCCESS, {}))
     } catch (error) {
