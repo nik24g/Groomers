@@ -10,7 +10,7 @@ const addNewSalon = async (req) =>{
     }
     const services = req.body.service.map((service)=>{
         service = JSON.parse(service)
-        const structuredService = {service_name: service.name, service_discount: service.discount, service_original_price: service.price}
+        const structuredService = {service_name: service.name, service_duration: service.duration, service_discount: service.discount, service_original_price: service.price}
         return structuredService
     })
     let features = JSON.parse(req.body.features)
@@ -21,7 +21,7 @@ const addNewSalon = async (req) =>{
     
     const combo_services = req.body.combo_service.map((combo)=>{
         combo = JSON.parse(combo);
-        combo = {combo_name: combo.combo_name, combo_services_name: combo.services, combo_price: combo.combo_price};
+        combo = {combo_name: combo.combo_name, combo_services_name: combo.services, combo_duration: combo.duration, combo_price: combo.combo_price};
         return combo;
     })
     const location = {type: "Point", coordinates: req.body.location.split(",")}
