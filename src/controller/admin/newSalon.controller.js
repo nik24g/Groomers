@@ -2,30 +2,30 @@ const SalonModel = require("../../models/client/salon.model")
 const messages = require("../../utils/constant")
 const { successResponse, errorResponse } = require("../../utils/response");
 
-const addNewSalon = async (req) =>{
-    // console.log("req body=", req.body);
-    const salonExist = await SalonModel.exists({salon_code: req.body.code})
-    if (salonExist){
+const addNewSalon = async (req) => {
+    console.log("req.body=", req.body);
+    console.log("req body=", JSON.parse(req.body.combo_service));
+    const salonExist = await SalonModel.exists({ salon_code: req.body.code })
+    if (salonExist) {
         return successResponse(403, messages.success.ALREADY_SALON, {})
     }
-    const services = req.body.service.map((service)=>{
-        service = JSON.parse(service)
-        const structuredService = {service_name: service.name, service_discount: service.discount, service_original_price: service.price}
+    const services = JSON.parse(req.body.service).map((service) => {
+        // service = JSON.parse(service)
+        const structuredService = { service_name: service.name, service_discount: service.discount, service_original_price: service.price, service_duration: service.duration }
         return structuredService
     })
     let features = JSON.parse(req.body.features)
-    features = {feature_wifi: features.wifi, feature_parking: features.parking, feature_AC: features.AC}
-    
+    features = { feature_wifi: features.wifi, feature_parking: features.parking, feature_AC: features.AC }
+
     let languages = JSON.parse(req.body.languages)
-    languages = {language_hindi: languages.hindi, language_english: languages.english, language_telugu: languages.telugu}
-    
-    const combo_services = req.body.combo_service.map((combo)=>{
-        combo = JSON.parse(combo);
-        combo = {combo_name: combo.combo_name, combo_services_name: combo.services, combo_price: combo.combo_price};
+    languages = { language_hindi: languages.hindi, language_english: languages.english, language_telugu: languages.telugu }
+    const combo_services = JSON.parse(req.body.combo_service).map((combo) => {
+        // combo = JSON.parse(combo);
+        combo = { combo_name: combo.combo_name, combo_services_name: combo.services, combo_price: combo.combo_price, combo_duration: combo.duration };
         return combo;
     })
-    const location = {type: "Point", coordinates: req.body.location.split(",")}
-    const photosPath = req.files.map((file)=>file.path)
+    const location = { type: "Point", coordinates: req.body.location.split(",") }
+    const photosPath = req.files.map((file) => file.path)
 
     const salon = new SalonModel({
         salon_username: req.body.username,
@@ -47,7 +47,7 @@ const addNewSalon = async (req) =>{
         salon_photos: photosPath,
         salon_features: features,
         salon_languages: languages,
-        salon_owner_name: req.body.owner_name, 
+        salon_owner_name: req.body.owner_name,
         salon_owner_mobile: req.body.owner_mobile,
         salon_owner_pancard_number: req.body.owner_pancard_number,
         salon_bank_name: req.body.bank_name,
@@ -55,7 +55,7 @@ const addNewSalon = async (req) =>{
         salon_bank_IFSC_code: req.body.bank_IFSC_code
     })
     const response = await salon.save()
-    return successResponse(201, messages.success.SALON_ADDED, {response})
+    return successResponse(201, messages.success.SALON_ADDED, { response })
 }
 
 module.exports = addNewSalon

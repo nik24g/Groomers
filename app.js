@@ -6,15 +6,16 @@ const configs = require("./src/config/config.js");
 let port = process.env.PORT || configs.PORT;
 const path = require('path')
 const mongodb = require("./src/database/database");
+const cors = require("cors");
 
 
 // db config 
 mongodb.createDbConnection();
 
-
 //using bodyParse
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 // app.use('/static', express.static(path.join(__dirname, '/src/static')))
 // for using static files 
