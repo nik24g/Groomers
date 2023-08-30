@@ -1,8 +1,10 @@
 const SalonModel = require("../../models/client/salon.model")
 const messages = require("../../utils/constant")
 const { successResponse, errorResponse } = require("../../utils/response");
+const { v4: uuidv4 } = require('uuid');
 
 const addNewSalon = async (req) => {
+
     console.log("req.body=", req.body);
     console.log("req body=", JSON.parse(req.body.combo_service));
     const salonExist = await SalonModel.exists({ salon_code: req.body.code })
@@ -28,6 +30,7 @@ const addNewSalon = async (req) => {
     const photosPath = req.files.map((file) => file.path)
 
     const salon = new SalonModel({
+        salon_uuid: uuidv4(),
         salon_username: req.body.username,
         salon_password: req.body.password,
         salon_code: req.body.code,
