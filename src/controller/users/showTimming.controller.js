@@ -1,7 +1,6 @@
 const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant");
 const moment = require("moment");
-const SalonModel = require("../../models/client/salon.model");
 const SlotModel = require("../../models/client/slot.model");
 
 const showTimmings = async (req) => {

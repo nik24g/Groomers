@@ -18,6 +18,7 @@ const ContactModel = require("../models/users/contactUs.model")
 const HomeServiceModel = require("../models/users/homeService.model")
 const { v4: uuidv4 } = require('uuid');
 const SalonModel = require("../models/client/salon.model")
+const {newAppointment} = require("../controller/users/appointment.controller")
 
 // router for user or customer registration
 router.post("/registration", registrationValidator, async (req, res) => {
@@ -105,6 +106,16 @@ router.get("/showtimings/:uuid", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await showTimming(req)
+        return res.send(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+router.post("/create_appointment", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await newAppointment(req)
         return res.send(response)
     } catch (error) {
         console.log(error);
