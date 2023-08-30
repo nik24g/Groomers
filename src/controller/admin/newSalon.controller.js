@@ -3,7 +3,7 @@ const messages = require("../../utils/constant")
 const { successResponse, errorResponse } = require("../../utils/response");
 
 const addNewSalon = async (req) =>{
-    // console.log("req body=", req.body);
+    console.log("req body=", req.body);
     const salonExist = await SalonModel.exists({salon_code: req.body.code})
     if (salonExist){
         return successResponse(403, messages.success.ALREADY_SALON, {})

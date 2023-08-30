@@ -47,7 +47,7 @@ router.post("/add-new-salon", tokenAuthentication, uploadFile.array('photos'), a
         return res.send(response);
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG))
     }
 });
 
