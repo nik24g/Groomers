@@ -10,7 +10,7 @@ const moment = require("moment");
 const newAppointment = async (req) =>{
     const receivedUserUuid = req.body.user_uuid
     const receivedSalonUuid = req.body.salon_uuid
-    const slotUuids = req.body.slot_uuids
+    const slotUuids = req.body.slot_uuids || []
     const duration = req.body.duration
     const timing = req.body.timing
     const receivedServices = req.body.services || []
