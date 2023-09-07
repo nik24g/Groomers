@@ -48,11 +48,12 @@ async function initiatePayment(price, appointmentId, userId) {
     return paymentData
 }
 
-function handleCallback(res, res) {
+async function handleCallback(req, res) {
     // Handle the PhonePe callback to update the payment status
     // Verify the callback's authenticity (signature, etc.)
     // Update your database with the payment status
-    const paymentData = new PaymentModel({payment_uuid: uuidv4(), payment_payload: req.body})
+    const paymentData = new PaymentModel({payment_uuid: uuidv4(), payment_payload: `${req.body}`})
+    await paymentData.save()
     console.log("here we go in hadle call back");
     res.sendStatus(200); // Respond with a success status
 }
