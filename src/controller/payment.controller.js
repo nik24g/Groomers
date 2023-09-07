@@ -12,7 +12,7 @@ async function initiatePayment(price, appointmentId, userId) {
         "amount": price * 100,
         "redirectUrl": "https://www.groomer.live",
         "redirectMode": "REDIRECT",
-        "callbackUrl": "http://localhost:8000/payment/phonepe-callback",
+        "callbackUrl": "http://3.108.227.136/payment/phonepe-callback",
         "mobileNumber": "7999676443",
         "paymentInstrument": {
             "type": "PAY_PAGE"
