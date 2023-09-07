@@ -19,7 +19,7 @@ app.use(cors());
 
 // app.use('/static', express.static(path.join(__dirname, '/src/static')))
 // for using static files 
-app.use(express.static(`${__dirname}/public`))
+app.use("/public", express.static(`${__dirname}/public`))
 
 //route for user or customer 
 const userRouter = require("./src/routers/user.router");
@@ -32,6 +32,10 @@ app.use("/admin", adminRouter);
 //route for user or client 
 const clientRouter = require("./src/routers/client.router");
 app.use("/client", clientRouter);
+
+//route for payment
+const paymentRouter = require("./src/routers/payment.router.js");
+app.use('/payment', paymentRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port} successfully`);

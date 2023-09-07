@@ -11,8 +11,8 @@ const appointmentSchema = new schema({
     },
     appointment_booking_id: {
         type: String,
-        // required: true,
-        // unique: true,
+        required: true,
+        unique: true,
     },
     appointment_user_uuid: {
         type: String,

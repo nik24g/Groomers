@@ -42,7 +42,8 @@ const error = {
     WRONG_SALON_CODE: "Salon code is wrong or salon not available, check salon code.",
     OTHER_SALON_INFO: "You are not authorise to perform this task.",
     SLOT_NOT_FOUND: "Slot not found with this uuid.",
-    NOT_FOUND: "Not found"
+    NOT_FOUND: "Not found",
+    SLOT_NOT_AVAILABLE: "Containing Slot not available. It may be fully booked or not Active"
 }
 
 

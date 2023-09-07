@@ -13,11 +13,12 @@ const addNewSalon = async (req) => {
         const structuredService = { service_name: service.name, service_discount: service.discount, service_original_price: service.price, service_duration: service.duration }
         return structuredService
     })
-    console.log(req.body.features);
+    console.log("body:", req.body);
     let features = req.body.features
     features = { feature_wifi: features.wifi, feature_parking: features.parking, feature_AC: features.AC }
 
-    let languages = JSON.parse(req.body.languages)
+    console.log(req.body.languages, typeof(req.body.languages));
+    let languages = req.body.languages
     languages = { language_hindi: languages.hindi, language_english: languages.english, language_telugu: languages.telugu }
     const combo_services = JSON.parse(req.body.combo_service).map((combo) => {
         // combo = JSON.parse(combo);
