@@ -11,10 +11,16 @@ const paymentSchema = new schema({
         unique: true,
         default: uuidv4()
     },
-    payment_payload: {
+    payment_user_uuid: {
         type: String,
-        required: true        
-    }
+        required: true,
+    },
+    payment_salon_uuid: {
+        type: String,
+        required: true,
+    },
+
+    
 }, { timestamps: true })
 
 // End of the modal
