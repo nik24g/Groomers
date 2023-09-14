@@ -72,7 +72,7 @@ const newAppointment = async (req) =>{
     await newAppointment.save()
     // creating order for razorpay
     // const order = await createOrder(totalDiscountedPrice, appointmentBookingId)
-    const payment = await initiatePayment(subtotal, appointmentBookingId)
+    const payment = await initiatePayment(subtotal, appointmentBookingId, receivedUserUuid)
     return successResponse(201, messages.success.SUCCESS, {order: payment})
 }
 module.exports = {newAppointment}

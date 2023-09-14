@@ -9,7 +9,7 @@ const loginAdmin = require("../controller/admin/login.controller")
 const tokenAuthentication = require("../middleware/admin/verifyTokenAdmin")
 const addNewSalon = require("../controller/admin/newSalon.controller.js")
 const uploadFile = require('../middleware/upload');
-const getAllSalons = require("../controller/admin/getSalons.controller.js")
+const {getSalonById, getAllSalons} = require("../controller/admin/getSalons.controller.js")
 const updateSalon = require("../controller/admin/updateSalon.controller.js")
 const generateSlotOnBoard = require("../controller/admin/slotOnboard.controller")
 const generateDailySlots = require("../controller/admin/dailySlots.controller")
@@ -35,7 +35,7 @@ router.post("/login", adminLoginJoiValidator, async (req, res) => {
         return res.send(response);
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 });
 
@@ -59,7 +59,7 @@ router.patch("/salon/update", tokenAuthentication, uploadFile.array('photos'), a
         return res.send(response);
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 });
 
@@ -67,11 +67,23 @@ router.patch("/salon/update", tokenAuthentication, uploadFile.array('photos'), a
 router.get("/salons", tokenAuthentication, async (req, res)=>{
     let response;
     try {
-        response = await getAllSalons(req);
+        response = await getSalonById(req);
         return res.send(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
+    }
+})
+
+// getting all salons list
+router.get("/all-salons", tokenAuthentication, async (req, res)=>{
+    let response;
+    try {
+        response = await getAllSalons(req);
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(errorResponse(500, messages.error.WRONG))
     }
 })
 
@@ -82,7 +94,7 @@ router.post("/generateSlotOnBoard", async (req, res)=>{
         return res.send(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.get("/generateDailySlots", async (req, res)=>{
@@ -92,7 +104,7 @@ router.get("/generateDailySlots", async (req, res)=>{
         return res.send(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
@@ -102,7 +114,7 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
         return res.send(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.delete("/feedback/delete", tokenAuthentication, async (req, res) => {
@@ -112,7 +124,7 @@ router.delete("/feedback/delete", tokenAuthentication, async (req, res) => {
         return res.send(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.get("/contact", tokenAuthentication, async (req, res) => {
@@ -121,7 +133,7 @@ router.get("/contact", tokenAuthentication, async (req, res) => {
         return res.send(successResponse(200, messages.success.SUCCESS, contacts))
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.delete("/contact", tokenAuthentication, async (req, res) => {
@@ -130,7 +142,7 @@ router.delete("/contact", tokenAuthentication, async (req, res) => {
         return res.send(successResponse(203, messages.success.DELETED, {}))
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.get("/homeService", tokenAuthentication, async (req, res) => {
@@ -139,7 +151,7 @@ router.get("/homeService", tokenAuthentication, async (req, res) => {
         return res.send(successResponse(200, messages.success.SUCCESS, services))
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.delete("/homeService", tokenAuthentication, async (req, res) => {
@@ -148,7 +160,7 @@ router.delete("/homeService", tokenAuthentication, async (req, res) => {
         return res.send(successResponse(203, messages.success.DELETED, {}))
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 module.exports = router;
