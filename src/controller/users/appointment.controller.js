@@ -1,6 +1,7 @@
 const userModel = require("../../models/users/user.model");
 const SalonModel = require('../../models/client/salon.model')
 const SlotModel = require("../../models/client/slot.model");
+const PaymentModel = require("../../models/users/payment.model")
 const AppointmentModel = require("../../models/client/appointment.model")
 const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant")
@@ -11,6 +12,9 @@ const {initiatePayment} = require("../payment.controller")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
 //if payment fails then we will not subtract count but if payment success then we will subtract it.
+// appointment uuid will be also transection id
+// appointment status will be pending, booked, cancelled
+// appointment payment status will be pending, complete, failed
 const newAppointment = async (req) =>{
     const receivedUserUuid = req.uuid
     const receivedSalonUuid = req.body.salon_uuid
@@ -73,6 +77,17 @@ const newAppointment = async (req) =>{
     // creating order for razorpay
     // const order = await createOrder(totalDiscountedPrice, appointmentBookingId)
     const payment = await initiatePayment(subtotal, appointmentBookingId, receivedUserUuid)
+    // storing payment details in db
+    const newPayment = new PaymentModel({
+        payment_uuid: uuidv4(),
+        payment_user_uuid: receivedUserUuid,
+        payment_salon_uuid: receivedSalonUuid,
+        payment_amount: subtotal,
+        payment_merchant_transaction_id: appointmentBookingId,
+        payment_status: "initiated",
+        payment_code: payment.code
+    })
+    await newPayment.save()
     return successResponse(201, messages.success.SUCCESS, {order: payment})
 }
 module.exports = {newAppointment}

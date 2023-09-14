@@ -39,7 +39,7 @@ const deleteFeedback = async (req) => {
     const feedback = await FeedbackModel.findOne({feedback_uuid: feedbackUuid})
     if (feedback){
         await FeedbackModel.findOneAndDelete({feedback_uuid: feedbackUuid})
-        return successResponse(203, messages.success.DELETED, {})
+        return successResponse(202, messages.success.DELETED, {})
     }
     else{
         return errorResponse(404, messages.error.NOT_FOUND, {})

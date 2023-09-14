@@ -3,6 +3,7 @@ const messages = require("../../utils/constant");
 const { successResponse, errorResponse } = require("../../utils/response");
 const { v4: uuidv4 } = require("uuid");
 
+// salon type shoud one of male, female, unisex
 const addNewSalon = async (req) => {
   const salonExist = await SalonModel.exists({ salon_code: req.body.code });
   if (salonExist) {
@@ -53,6 +54,7 @@ const addNewSalon = async (req) => {
     salon_password: req.body.password,
     salon_code: req.body.code,
     salon_name: req.body.name,
+    salon_type: req.body.type,
     salon_address: req.body.address,
     salon_city: req.body.city,
     salon_state: req.body.state,

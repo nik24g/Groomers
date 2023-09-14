@@ -47,6 +47,7 @@ const updateSalon = async (req, res) => {
     salon_password: req.body.password,
     salon_code: req.body.code,
     salon_name: req.body.name,
+    salon_type: req.body.type,
     salon_address: req.body.address,
     salon_city: req.body.city,
     salon_state: req.body.state,

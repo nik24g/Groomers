@@ -9,6 +9,6 @@ router.post('/initiate-payment', paymentController.initiatePayment);
 // Route for handling PhonePe callback
 router.post('/phonepe-callback', paymentController.handleCallback);
 
-router.post('/status', paymentController.chechPaymentStatus);
+router.get('/payment-status/:transactionId', paymentController.chechPaymentStatus);
 
 module.exports = router;

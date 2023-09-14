@@ -130,6 +130,9 @@ const appointmentSchema = new schema({
     appointment_previous_appointment_uuid: {
         type: String
     },
+    appointment_refund_amount: {
+        type: String
+    },
     appointment_invoice_path: {
         type: String
     },

@@ -23,7 +23,7 @@ const slotSchema = new schema({
         required: true
     },
     slot_count: {
-        type: String,
+        type: Number,
         required: true
     },
     slot_status: {

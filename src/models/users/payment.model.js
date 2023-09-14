@@ -19,8 +19,25 @@ const paymentSchema = new schema({
         type: String,
         required: true,
     },
-
-    
+    payment_merchant_transaction_id: {
+        type: String,
+        required: true,
+    },
+    payment_amount: {
+        type: Number,
+        required: true,
+    },
+    payment_status: {
+        type: String,
+        required: true,
+    },
+    payment_code: {
+        type: String,
+        required: true
+    },
+    payment_options: {
+        type: String
+    }
 }, { timestamps: true })
 
 // End of the modal

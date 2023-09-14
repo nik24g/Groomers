@@ -20,7 +20,10 @@ const success = {
     DELETED: "Deleted.",
     SLOT_DISABLE: "Slot is disable",
     SLOT_ENABLE: "Slot is enable",
-    REACHED_LIMIT: "Limit reached."
+    REACHED_LIMIT: "Limit reached.",
+    REFUND_SLOT_ALREADY_BOOKED: "Sorry for the inconvenience, Selected Slot is not available. Your refund will be initiated. Try with another slot again.",
+    APPOINTMENT_BOOKED: "Your appointment is now booked.",
+    PAYMENT_PENDING: "Payment is pending. Try again for payment status after 5 second."
 }
 const error = {
     WRONG: "Something went wrong..",
@@ -43,7 +46,8 @@ const error = {
     OTHER_SALON_INFO: "You are not authorise to perform this task.",
     SLOT_NOT_FOUND: "Slot not found with this uuid.",
     NOT_FOUND: "Not found",
-    SLOT_NOT_AVAILABLE: "Containing Slot not available. It may be fully booked or not Active"
+    SLOT_NOT_AVAILABLE: "Containing Slot not available. It may be fully booked or not Active",
+    PAYMENT_FAILED: "Payment is failed. Try again."
 }
 
 

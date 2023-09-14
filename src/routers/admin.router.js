@@ -21,7 +21,7 @@ const HomeServiceModel = require("../models/users/homeService.model")
 router.post("/registration", newAdminValidator, async (req, res) => {
     try {
         const newAdmin = await registerAdmin(req);
-        return res.send(successResponse(201, messages.success.ADMIN_CREATED, {}));
+        return res.status(201).json(successResponse(201, messages.success.ADMIN_CREATED, {}));
     } catch (error) {
         return res.send(errorResponse(409, error, {}));
     }
@@ -44,7 +44,7 @@ router.post("/add-new-salon", tokenAuthentication, uploadFile.array('photos'), a
     let response;
     try {
         response = await addNewSalon(req, res);
-        return res.send(response);
+        return res.status(201).json(response);
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG))
@@ -56,7 +56,7 @@ router.patch("/salon/update", tokenAuthentication, uploadFile.array('photos'), a
     let response;
     try {
         response = await updateSalon(req, res);
-        return res.send(response);
+        return res.status(202).json(response);
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -91,7 +91,7 @@ router.post("/generateSlotOnBoard", async (req, res)=>{
     let response;
     try {
         response = await generateSlotOnBoard(req);
-        return res.send(response)
+        return res.status(201).json(response)
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -101,7 +101,7 @@ router.get("/generateDailySlots", async (req, res)=>{
     let response;
     try {
         response = await generateDailySlots(req);
-        return res.send(response)
+        return res.status(201).json(response)
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -121,7 +121,7 @@ router.delete("/feedback/delete", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await deleteFeedback(req)
-        return res.send(response)
+        return res.status(202).json(response)
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -139,7 +139,7 @@ router.get("/contact", tokenAuthentication, async (req, res) => {
 router.delete("/contact", tokenAuthentication, async (req, res) => {
     try {
         const contacts = await ContactModel.findOneAndDelete({contact_uuid: req.body.contact_uuid})
-        return res.send(successResponse(203, messages.success.DELETED, {}))
+        return res.status(202).json(successResponse(202, messages.success.DELETED, {}))
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -157,7 +157,7 @@ router.get("/homeService", tokenAuthentication, async (req, res) => {
 router.delete("/homeService", tokenAuthentication, async (req, res) => {
     try {
         const service = await HomeServiceModel.findOneAndDelete({home_uuid: req.body.service_uuid})
-        return res.send(successResponse(203, messages.success.DELETED, {}))
+        return res.status(202).json(successResponse(202, messages.success.DELETED, {}))
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
