@@ -16,6 +16,7 @@ const generateDailySlots = require("../controller/admin/dailySlots.controller")
 const {getFeedback, deleteFeedback} = require("../controller/admin/feedback.controller")
 const ContactModel = require("../models/users/contactUs.model")
 const HomeServiceModel = require("../models/users/homeService.model")
+const newSalonValidation = require("../middleware/admin/newSalon.joi.validator")
 
 // route for creating new admin 
 router.post("/registration", newAdminValidator, async (req, res) => {
@@ -40,7 +41,7 @@ router.post("/login", adminLoginJoiValidator, async (req, res) => {
 });
 
 //route for adding new salon
-router.post("/add-new-salon", tokenAuthentication, uploadFile.array('photos'), async (req, res) => {
+router.post("/add-new-salon", tokenAuthentication, uploadFile.array('photos'), newSalonValidation, async (req, res) => {
     let response;
     try {
         response = await addNewSalon(req, res);

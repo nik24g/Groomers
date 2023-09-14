@@ -61,13 +61,13 @@ async function handleCallback(req, res) {
     // Update your database with the payment status
     const transectionId = req.body.data.merchantTransactionId
     if (req.body.code == "PAYMENT_SUCCESS") {
-        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "complete", payment_options: req.body })
+        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "complete", payment_transaction_id: req.body.data.transactionId, payment_options: req.body })
     }
     else if (req.body.code == "PAYMENT_PENDING"){
-        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "pending", payment_options: req.body })
+        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "pending", payment_transaction_id: req.body.data.transactionId, payment_options: req.body })
     }
     else {
-        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "failed", payment_options: req.body })
+        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "failed", payment_transaction_id: req.body.data.transactionId, payment_options: req.body })
     }
     console.log("here we go in hadle call back");
     res.sendStatus(200); // Respond with a success status
@@ -108,7 +108,7 @@ const chechPaymentStatus = async (req, res) => {
             // also we will update slot availability that it is booked now or slot -1
 
             //updating payment
-            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: req.body.code, payment_status: "complete", payment_options: req.body })
+            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "complete", payment_transaction_id: response.data.transactionId, payment_options: req.body })
 
             // before updating appointment and slots we need to check that all selected slots is available or not. if any of them is not available then we need to cancel the appoitment and refund the payment
             const appointment = await AppointmentModel.findOne({appointment_booking_id: transactionId})
@@ -144,11 +144,13 @@ const chechPaymentStatus = async (req, res) => {
         }
         else if(response.code == "PAYMENT_PENDING"){
             // here payment is pending so front end need to send req for check payment status after 5 second
+            // updating payment in db as pending
+            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "pending", payment_transaction_id: response.data.transactionId, payment_options: req.body })
             return res.status(206).json(successResponse(206, messages.success.PAYMENT_PENDING, {}))
         }
         else {
             // here payment is failed due to any reseason
-            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: req.body.code, payment_status: "failed", payment_options: req.body })
+            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "failed", payment_transaction_id: response.data.transactionId, payment_options: req.body })
             await AppointmentModel.findByIdAndUpdate({appointment_booking_id: transactionId}, {appointment_status: "rejected", appointment_payment_status: "failed"})
             return res.status(402).json(errorResponse(402, messages.error.PAYMENT_FAILED, {}))
         }

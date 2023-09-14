@@ -5,10 +5,6 @@ const { v4: uuidv4 } = require("uuid");
 
 // salon type shoud one of male, female, unisex
 const addNewSalon = async (req) => {
-  const salonExist = await SalonModel.exists({ salon_code: req.body.code });
-  if (salonExist) {
-    return successResponse(403, messages.success.ALREADY_SALON, {});
-  }
   const services = JSON.parse(req.body.service).map((service) => {
     // service = JSON.parse(service)
     const structuredService = {

@@ -12,7 +12,7 @@ const success = {
     OTP_LIMIT: "You exceed your Wrong OTP limit. Now generate New OTP after 2 Minutes",
     ADMIN_LOGIN: "Logged in successfully",
     SALON_ADDED: "Salon added successfully.",
-    ALREADY_SALON: "Salon already found with this salon code.",
+    ALREADY_SALON: "Salon already found with this salon code or username.",
     SALON_UPDATED: "Salon updated successfully.",
     SLOTS_CREATED_ONBOARD: "Slots Created for 7 days including today.",
     SLOTS_CREATED_DAILY: "Slots created for all salons.",

@@ -23,6 +23,9 @@ const paymentSchema = new schema({
         type: String,
         required: true,
     },
+    payment_transaction_id: {
+        type: String
+    },
     payment_amount: {
         type: Number,
         required: true,
