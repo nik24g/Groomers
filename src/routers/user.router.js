@@ -18,8 +18,8 @@ const ContactModel = require("../models/users/contactUs.model")
 const HomeServiceModel = require("../models/users/homeService.model")
 const { v4: uuidv4 } = require('uuid');
 const SalonModel = require("../models/client/salon.model")
-const {newAppointment} = require("../controller/users/appointment.controller")
-const {handleWebhook} = require("../controller/users/razorpay.controller")
+const {newAppointment, cancelAppointment} = require("../controller/users/appointment.controller")
+// const {handleWebhook} = require("../controller/users/razorpay.controller")
 const appointmentValidator = require("../middleware/users/appointment.validation")
 // router for user or customer registration
 router.post("/registration", registrationValidator, async (req, res) => {
@@ -124,9 +124,16 @@ router.post("/create_appointment", tokenAuthentication, appointmentValidator, as
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 })
-
-// Razorpay webhook endpoint
-router.post('/razorpay-webhook', handleWebhook);
+router.get("/cancel_appointment/:uuid", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await cancelAppointment(req)
+        return res.send(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
 
 router.post("/wishlist/create", tokenAuthentication, async (req, res) => {
     let response;

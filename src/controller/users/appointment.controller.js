@@ -7,15 +7,16 @@ const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant")
 const { v4: uuidv4 } = require('uuid');
 const moment = require("moment");
-const {createOrder, razorpay} = require("../../utils/razorpay.util")
-const {initiatePayment} = require("../payment.controller")
+const { createOrder, razorpay } = require("../../utils/razorpay.util")
+const { initiatePayment } = require("../payment.controller")
+const RefundModel = require("../../models/users/refund.model")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
 //if payment fails then we will not subtract count but if payment success then we will subtract it.
 // appointment uuid will be also transection id
 // appointment status will be pending, booked, cancelled
 // appointment payment status will be pending, complete, failed
-const newAppointment = async (req) =>{
+const newAppointment = async (req) => {
     const receivedUserUuid = req.uuid
     const receivedSalonUuid = req.body.salon_uuid
     const slotUuids = req.body.slot_uuids || []
@@ -28,7 +29,7 @@ const newAppointment = async (req) =>{
     const guestMobile = req.body.mobile
     const appointmentBookingId = uuidv4()
 
-    const salon = await SalonModel.findOne({salon_uuid: receivedSalonUuid})
+    const salon = await SalonModel.findOne({ salon_uuid: receivedSalonUuid })
     // getting services or combos that user selected 
     const services = salon.salon_services.filter(item => receivedServices.includes(item.service_name));
     const combos = salon.salon_combo_services.filter(item => receivedCombos.includes(item.combo_name));
@@ -88,6 +89,55 @@ const newAppointment = async (req) =>{
         payment_code: payment.code
     })
     await newPayment.save()
-    return successResponse(201, messages.success.SUCCESS, {order: payment})
+    return successResponse(201, messages.success.SUCCESS, { order: payment })
 }
-module.exports = {newAppointment}
+
+const cancelAppointment = async (req) => {
+    const appointmentUuid = req.params.id
+    const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
+    // there is a condition for cancel the appointment that user can not cancel the appointment if he tries to cancel just 1 hour before appointment
+    // so we need to validate that timing with users current time
+
+    // ...validation code
+
+    // we will deduct 15% cancellation charges from subtotal for refund 
+    const subtotal = Number(appointment.appointment_subtotal)
+    const refundAmount = subtotal - (subtotal * 15 / 100)
+    appointment.appointment_refund_amount = refundAmount
+    appointment.appointment_status = "cancelled"
+    appointment.appointment_is_active = false
+
+    const payment = await PaymentModel.findOne({ payment_merchant_transaction_id: appointment.appointment_booking_id })
+    // initiating refund against payment 
+    const refundData = await refund(payment.payment_user_uuid, payment.payment_transaction_id, payment.payment_merchant_transaction_id, payment.payment_amount)
+    const refundObj = new RefundModel({
+        refund_uuid: uuidv4(),
+        refund_user_uuid: payment.payment_user_uuid,
+        refund_salon_uuid: appointment.appointment_salon_uuid,
+        refund_amount: refundAmount,
+        refund_merchant_transaction_id: payment.payment_merchant_transaction_id,
+        refund_transaction_id: refundData.data.transactionId,
+        refund_status: "initiated",
+        refund_code: refundData.code,
+        refund_options: refundData
+    })
+    await refundObj.save()
+    return successResponse(200, messages.success.APPOINTMENT_CANCEL, {})
+}
+
+const reScheduleAppointment = async (req) => {
+    const slotUuids = req.body.slot_uuids || []
+    const duration = req.body.duration
+    const timing = req.body.timing
+    const receivedServices = req.body.services || []
+    const receivedCombos = req.body.combos || []
+    const isGuestAppointment = req.body.is_guest_appointment || false
+    const guestFullName = req.body.full_name
+    const guestMobile = req.body.mobile
+    const appointmentBookingId = uuidv4()
+
+    const appointmentUuid = req.body.appointment_uuid
+    const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
+
+}
+module.exports = { newAppointment, cancelAppointment }

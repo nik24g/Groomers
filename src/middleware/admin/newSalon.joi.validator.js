@@ -35,7 +35,7 @@ const newSalonValidation = async (req, res, next) => {
         state: req.body.state,
         location: req.body.location,
         franchise: req.body.franchise,
-        franchise_list: req.body.franchise_salon,
+        franchise_list: JSON.parse(req.body.franchise_salon),
         slots: req.body.slots_number,
         services: services,
         combo_services: combo_services,

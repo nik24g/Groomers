@@ -17,14 +17,14 @@ const salonSchema = Joi.object({
         name: Joi.string().required(),
         discount: Joi.number().required(),
         original_price: Joi.number().required(),
-        duration: Joi.number().required(),
+        duration: Joi.string().required(),
     })).required(),
 
     combo_services: Joi.array().items(Joi.object({
         name: Joi.string().required(),
         services_name: Joi.array().items(Joi.string().required()).required(),
         price: Joi.number().required(),
-        duration: Joi.number().required(),
+        duration: Joi.string().required(),
     })).required(),
     opening_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),
     closing_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),

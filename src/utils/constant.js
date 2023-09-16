@@ -23,7 +23,9 @@ const success = {
     REACHED_LIMIT: "Limit reached.",
     REFUND_SLOT_ALREADY_BOOKED: "Sorry for the inconvenience, Selected Slot is not available. Your refund will be initiated. Try with another slot again.",
     APPOINTMENT_BOOKED: "Your appointment is now booked.",
-    PAYMENT_PENDING: "Payment is pending. Try again for payment status after 5 second."
+    PAYMENT_PENDING: "Payment is pending. Try again for payment status after 5 second.",
+    SALON_DELETED: "Salon is deleted.",
+    APPOINTMENT_CANCEL: "Your appointment is now cancelled and your refund is being initiated."
 }
 const error = {
     WRONG: "Something went wrong..",
