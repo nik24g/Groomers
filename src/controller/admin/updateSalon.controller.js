@@ -40,7 +40,6 @@ const updateSalon = async (req, res) => {
     return combo;
   });
   const location = { type: "Point", coordinates: req.body.location.split(",") };
-  const photosPath = req.files.map((file) => file.path);
 
   const updatedDetails = {
     salon_username: req.body.username,
@@ -60,7 +59,6 @@ const updateSalon = async (req, res) => {
     salon_opening_time: req.body.opening_time,
     salon_closing_time: req.body.closing_time,
     salon_lunch_time: req.body.lunch_time,
-    salon_photos: photosPath,
     salon_features: features,
     salon_languages: languages,
     salon_owner_name: req.body.owner_name,
@@ -70,12 +68,19 @@ const updateSalon = async (req, res) => {
     salon_bank_account_number: req.body.bank_account_number,
     salon_bank_IFSC_code: req.body.bank_IFSC_code,
   };
-  const updatedSalon = await SalonModel.findOneAndUpdate(
-    { salon_uuid: SalonUuid },
-    updatedDetails,
-    { new: true }
-  );
-  return successResponse(202, messages.success.SALON_UPDATED, updatedSalon);
+
+  console.log(req.body.should_update_image);
+  if (req.body.should_update_image) {
+    const photosPath = req.files.map((file) => file.path);
+    updatedDetails.salon_photos = photosPath;
+  }
+  // const updatedSalon = await SalonModel.findOneAndUpdate(
+  //   { salon_uuid: SalonUuid },
+  //   updatedDetails,
+  //   { new: true }
+  // );
+  // return successResponse(202, messages.success.SALON_UPDATED, updatedSalon);
+  return successResponse(202, messages.success.SALON_UPDATED, updatedDetails);
 };
 
 module.exports = updateSalon;
