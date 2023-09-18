@@ -38,6 +38,9 @@ const paymentSchema = new schema({
         type: String,
         required: true
     },
+    payment_method: {
+        type: String,
+    },
     payment_options: {
         type: String
     }

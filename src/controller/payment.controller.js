@@ -27,7 +27,7 @@ async function initiatePayment(price, appointmentId, userId) {
             "type": "PAY_PAGE"
         }
     };
-    console.log("payload:", payload);
+    // console.log("payload:", payload);
     const saltKey = '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
     const saltIndex = '1';
 
@@ -44,8 +44,8 @@ async function initiatePayment(price, appointmentId, userId) {
     // Combine the hash, "###", and salt index to create the X-VERIFY header
     const xVerifyHeader = hash + '###' + saltIndex;
 
-    console.log('X-VERIFY Header:', xVerifyHeader);
-    console.log("encoded payload:", base64EncodedPayload);
+    // console.log('X-VERIFY Header:', xVerifyHeader);
+    // console.log("encoded payload:", base64EncodedPayload);
     const url = 'https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay';
     const options = {
         method: 'POST',
@@ -55,7 +55,7 @@ async function initiatePayment(price, appointmentId, userId) {
 
     let paymentData = await fetch(url, options)
     paymentData = await paymentData.json()
-    console.log("paymentData: ", paymentData)
+    // console.log("paymentData: ", paymentData)
     return paymentData
 }
 
@@ -65,13 +65,13 @@ async function handleCallback(req, res) {
     // Update your database with the payment status
     const transectionId = req.body.data.merchantTransactionId
     if (req.body.code == "PAYMENT_SUCCESS") {
-        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "complete", payment_transaction_id: req.body.data.transactionId, payment_options: req.body })
+        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "complete", payment_method: response.data.paymentInstrument.type, payment_transaction_id: req.body.data.transactionId, payment_options: JSON.stringify(req.body) })
     }
     else if (req.body.code == "PAYMENT_PENDING") {
-        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "pending", payment_transaction_id: req.body.data.transactionId, payment_options: req.body })
+        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "pending", payment_method: response.data.paymentInstrument.type, payment_transaction_id: req.body.data.transactionId, payment_options: JSON.stringify(req.body) })
     }
     else {
-        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "failed", payment_transaction_id: req.body.data.transactionId, payment_options: req.body })
+        const payment = await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transectionId }, { payment_code: req.body.code, payment_status: "failed", payment_method: response.data.paymentInstrument.type, payment_transaction_id: req.body.data.transactionId, payment_options: JSON.stringify(req.body) })
     }
     console.log("here we go in hadle call back");
     res.sendStatus(200); // Respond with a success status
@@ -80,7 +80,7 @@ async function handleCallback(req, res) {
 
 const chechPaymentStatus = async (req, res) => {
     const transactionId = req.params.transactionId
-    const payment = await PaymentModel.findOne({ payment_merchant_transaction_id: transactionId })
+    let payment = await PaymentModel.findOne({ payment_merchant_transaction_id: transactionId })
     // now check with payment obj that is it updated after payment in callback url or not
     if (payment.payment_status == "initiated" || payment.payment_status == "pending") {
         // it means callback url may not triggered now we will update in payment table and appointment table
@@ -112,37 +112,48 @@ const chechPaymentStatus = async (req, res) => {
             // also we will update slot availability that it is booked now or slot -1
 
             //updating payment
-            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "complete", payment_transaction_id: response.data.transactionId, payment_options: req.body })
-
+            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "complete", payment_method: response.data.paymentInstrument.type, payment_transaction_id: response.data.transactionId, payment_options: JSON.stringify(response) })
+            payment = await PaymentModel.findOne({ payment_merchant_transaction_id: transactionId })
             // before updating appointment and slots we need to check that all selected slots is available or not. if any of them is not available then we need to cancel the appoitment and refund the payment
             const appointment = await AppointmentModel.findOne({ appointment_booking_id: transactionId })
-            const slotsAvailability = isSlotsAvailable(appointment.appointment_slot_uuids)
+            const slotsAvailability = await isSlotsAvailable(appointment.appointment_slot_uuids)
+            // console.log("slotAvailability: ", slotsAvailability);
             if (!slotsAvailability) {
                 // it means one of the selected slot is not available due to inactivity of already booked so now we will initiate refund
                 // now creating new row in refund table
                 // we will also update appointment status in appointment table
                 const refundData = await refund(payment.payment_user_uuid, payment.payment_transaction_id, payment.payment_merchant_transaction_id, payment.payment_amount)
+                // console.log("refundData: ", refundData);
+                // console.log("payment: ", payment);
                 const refundObj = new RefundModel({
                     refund_uuid: uuidv4(),
                     refund_user_uuid: payment.payment_user_uuid,
                     refund_salon_uuid: appointment.appointment_salon_uuid,
                     refund_amount: payment.payment_amount,
                     refund_merchant_transaction_id: payment.payment_merchant_transaction_id,
+                    refund_transaction_id: refundData.data.transactionId,
                     refund_status: "initiated",
-                    refund_code: refundData.code
+                    refund_code: refundData.code,
+                    refund_options: JSON.stringify(refundData)
                 })
                 await refundObj.save()
 
                 // updating appointment status 
                 appointment.appointment_status = "rejected"
                 appointment.appointment_payment_status = "refund"
+                appointment.appointment_is_payment_done = true
+                appointment.appointment_refund_amount = payment.payment_amount
+                appointment.appointment_payment_method = payment.payment_method
                 await appointment.save()
                 return res.status(409).json(successResponse(409, messages.success.REFUND_SLOT_ALREADY_BOOKED, {}))
             }
             // now all selected slots are available so we can update
-            // updating appointment 
+            // updating appointment as for success booking
             appointment.appointment_status = "booked"
             appointment.appointment_payment_status = "completed"
+            appointment.appointment_is_payment_done = true
+            appointment.appointment_is_active = true
+            appointment.appointment_payment_method = payment.payment_method
             await appointment.save()
 
             // updating slot
@@ -166,12 +177,12 @@ const chechPaymentStatus = async (req, res) => {
         else if (response.code == "PAYMENT_PENDING") {
             // here payment is pending so front end need to send req for check payment status after 5 second
             // updating payment in db as pending
-            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "pending", payment_transaction_id: response.data.transactionId, payment_options: req.body })
+            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "pending", payment_transaction_id: response.data.transactionId, payment_options: JSON.stringify(response) })
             return res.status(206).json(successResponse(206, messages.success.PAYMENT_PENDING, {}))
         }
         else {
             // here payment is failed due to any reseason
-            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "failed", payment_transaction_id: response.data.transactionId, payment_options: req.body })
+            await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "failed", payment_transaction_id: response.data.transactionId, payment_options: JSON.stringify(response) })
             await AppointmentModel.findByIdAndUpdate({ appointment_booking_id: transactionId }, { appointment_status: "rejected", appointment_payment_status: "failed" })
             return res.status(402).json(errorResponse(402, messages.error.PAYMENT_FAILED, {}))
         }
@@ -186,7 +197,7 @@ const chechPaymentStatus = async (req, res) => {
 
             // before updating appointment and slots we need to check that all selected slots is available or not. if any of them is not available then we need to cancel the appoitment and refund the payment
             const appointment = await AppointmentModel.findOne({ appointment_booking_id: transactionId })
-            const slotsAvailability = isSlotsAvailable(appointment.appointment_slot_uuids)
+            const slotsAvailability = await isSlotsAvailable(appointment.appointment_slot_uuids)
             if (!slotsAvailability) {
                 // it means one of the selected slot is not available due to inactivity of already booked so now we will initiate refund
                 // now creating new row in refund table
@@ -201,20 +212,26 @@ const chechPaymentStatus = async (req, res) => {
                     refund_transaction_id: refundData.data.transactionId,
                     refund_status: "initiated",
                     refund_code: refundData.code,
-                    refund_options: refundData
+                    refund_options: JSON.stringify(refundData)
                 })
                 await refundObj.save()
 
                 // updating appointment status 
                 appointment.appointment_status = "rejected"
                 appointment.appointment_payment_status = "refund"
+                appointment.appointment_is_payment_done = true
+                appointment.appointment_refund_amount = payment.payment_amount
+                appointment.appointment_payment_method = payment.payment_method
                 await appointment.save()
                 return res.status(409).json(successResponse(409, messages.success.REFUND_SLOT_ALREADY_BOOKED, {}))
             }
             // now all selected slots are available so we can update
-            // updating appointment 
+            // updating appointment as for success booking
             appointment.appointment_status = "booked"
             appointment.appointment_payment_status = "completed"
+            appointment.appointment_is_payment_done = true
+            appointment.appointment_is_active = true
+            appointment.appointment_payment_method = payment.payment_method
             await appointment.save()
 
             // updating slot
@@ -252,13 +269,13 @@ const refundCallBack = async (req, res) => {
     // Update your database with the payment status
     const transectionId = req.body.data.merchantTransactionId
     if (req.body.code == "PAYMENT_SUCCESS") {
-        const refund = await RefundModel.findOneAndUpdate({ refund_merchant_transaction_id: transectionId }, { refund_code: req.body.code, refund_status: "complete", refund_transaction_id: req.body.data.transactionId, refund_options: req.body })
+        const refund = await RefundModel.findOneAndUpdate({ refund_merchant_transaction_id: transectionId }, { refund_code: req.body.code, refund_status: "complete", refund_transaction_id: req.body.data.transactionId, refund_options: JSON.stringify(req.body) })
     }
     else if (req.body.code == "PAYMENT_PENDING") {
-        const refund = await RefundModel.findOneAndUpdate({ refund_merchant_transaction_id: transectionId }, { refund_code: req.body.code, refund_status: "pending", refund_transaction_id: req.body.data.transactionId, refund_options: req.body })
+        const refund = await RefundModel.findOneAndUpdate({ refund_merchant_transaction_id: transectionId }, { refund_code: req.body.code, refund_status: "pending", refund_transaction_id: req.body.data.transactionId, refund_options: JSON.stringify(req.body) })
     }
     else {
-        const refund = await RefundModel.findOneAndUpdate({ refund_merchant_transaction_id: transectionId }, { refund_code: req.body.code, refund_status: "failed", refund_transaction_id: req.body.data.transactionId, refund_options: req.body })
+        const refund = await RefundModel.findOneAndUpdate({ refund_merchant_transaction_id: transectionId }, { refund_code: req.body.code, refund_status: "failed", refund_transaction_id: req.body.data.transactionId, refund_options: JSON.stringify(req.body) })
     }
     console.log("here we go in hadle refund call back");
     res.sendStatus(200); // Respond with a success status

@@ -7,9 +7,11 @@ const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant")
 const { v4: uuidv4 } = require('uuid');
 const moment = require("moment");
-const { createOrder, razorpay } = require("../../utils/razorpay.util")
+// const { createOrder, razorpay } = require("../../utils/razorpay.util")
 const { initiatePayment } = require("../payment.controller")
 const RefundModel = require("../../models/users/refund.model")
+const { refund } = require("../../services/refund")
+const {increaseSlotsCount} = require("../../services/updateSlot")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
 //if payment fails then we will not subtract count but if payment success then we will subtract it.
@@ -93,13 +95,23 @@ const newAppointment = async (req) => {
 }
 
 const cancelAppointment = async (req) => {
-    const appointmentUuid = req.params.id
+    const appointmentUuid = req.params.uuid
     const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
+    const appointmentTime = appointment.appointment_timing //(9:00 am)
     // there is a condition for cancel the appointment that user can not cancel the appointment if he tries to cancel just 1 hour before appointment
     // so we need to validate that timing with users current time
-
     // ...validation code
-
+    const currentTime = moment();
+    // const currentTime = moment('8:59 am', 'h:mm A');
+    // Parse the appointment time
+    const appointmentDateTime = moment(appointmentTime, 'h:mm A');
+    // Calculate time difference in minutes
+    const timeDifferenceMinutes = appointmentDateTime.diff(currentTime, 'minutes');
+    // Check if it's less than 60 minutes (1 hour)
+    if (timeDifferenceMinutes <= 60) {
+        // The appointment cannot be canceled
+        return errorResponse(400, messages.error.CAN_NOT_CANCEL, {});
+    }
     // we will deduct 15% cancellation charges from subtotal for refund 
     const subtotal = Number(appointment.appointment_subtotal)
     const refundAmount = subtotal - (subtotal * 15 / 100)
@@ -119,13 +131,18 @@ const cancelAppointment = async (req) => {
         refund_transaction_id: refundData.data.transactionId,
         refund_status: "initiated",
         refund_code: refundData.code,
-        refund_options: refundData
+        refund_options: JSON.stringify(refundData)
     })
     await refundObj.save()
+    await appointment.save()
+    // after initiating refund we need to update slot availability because of appointment cancellation one slot is now available for other users
+    await increaseSlotsCount(appointment.appointment_slot_uuids)
     return successResponse(200, messages.success.APPOINTMENT_CANCEL, {})
 }
 
 const reScheduleAppointment = async (req) => {
+    // use can not re-schedule appointment just before 1 hour of appointment time.
+    // user can reschedule his appointment if it is 1 hours before the scheduled slot.
     const slotUuids = req.body.slot_uuids || []
     const duration = req.body.duration
     const timing = req.body.timing
@@ -140,4 +157,41 @@ const reScheduleAppointment = async (req) => {
     const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
 
 }
-module.exports = { newAppointment, cancelAppointment }
+
+const appointments = async (req) => {
+    const { status, startDate, endDate, page = 1, limit = 10 } = req.query;
+    const filter = {
+        appointment_user_uuid: req.uuid
+    }
+    // adding status filter 
+    if (status){
+        filter.appointment_status = status
+    }
+    // adding date range filter 
+    if (startDate && endDate) {
+        // Parse the date input if needed, assuming it's already in "DD/MM/YYYY" format
+        const parsedStartDate = startDate;
+        const parsedEndDate = endDate;
+
+        filter.appointment_date = {
+            $gte: parsedStartDate,
+            $lte: parsedEndDate,
+        };
+    }
+    const options = {
+        skip: (page - 1) * limit,
+        limit: parseInt(limit),
+        select: {
+            _id: 0,
+            __v: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            appointment_is_reappointment: 0,
+        },
+    };
+
+    const appointments = await AppointmentModel.find(filter, null, options);
+    return successResponse(200, messages.success.SUCCESS, {appointments: appointments})
+    
+}
+module.exports = { newAppointment, cancelAppointment, reScheduleAppointment, appointments }

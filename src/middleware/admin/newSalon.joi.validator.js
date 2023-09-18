@@ -35,7 +35,6 @@ const newSalonValidation = async (req, res, next) => {
         state: req.body.state,
         location: req.body.location,
         franchise: req.body.franchise,
-        franchise_list: JSON.parse(req.body.franchise_salon),
         slots: req.body.slots_number,
         services: services,
         combo_services: combo_services,
@@ -51,6 +50,9 @@ const newSalonValidation = async (req, res, next) => {
         bank_account_number: req.body.bank_account_number,
         bank_IFSC_code: req.body.bank_IFSC_code
     };
+    if (req.body.franchise_salon){
+      payload.franchise_list = JSON.parse(req.body.franchise_salon)
+    }
 	const { error } = validation.validate(payload);
 
     // checking if any salon already registered with given username 

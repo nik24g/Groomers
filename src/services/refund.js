@@ -1,10 +1,13 @@
+const crypto = require('crypto');
+const Buffer = require('buffer').Buffer;
+
 const refund = async (userId, originalTransactionId, merchantTransactionId, amount) => {
     const payload = {
         "merchantId": process.env.MARCHANT_ID,
         "merchantUserId": userId,
         "originalTransactionId": originalTransactionId,
         "merchantTransactionId": merchantTransactionId,
-        "amount": amount,
+        "amount": amount * 100,
         "callbackUrl": process.env.PG_REFUND_CALLBACK_URL
     }
     const saltKey = process.env.PG_SALT_KEY;

@@ -10,6 +10,8 @@ const {disableSlot} = require("../controller/client/toggleSlot.controller.js")
 const {enableSlot} = require("../controller/client/toggleSlot.controller.js")
 const toggleSalon = require("../controller/client/toggleSalonHoliday.controller")
 const {getFeedback} = require("../controller/client/feedback.controller")
+const {appointments} = require("../controller/client/appointment.controller")
+const {revenue} = require("../controller/client/revenue.controller")
 
 router.post("/login", clientLoginJoiValidator, async (req, res) => {
     let response;
@@ -72,6 +74,30 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
     try {
         response = await getFeedback(req)
         return res.send(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+
+// route for getting all appointments list with details 
+router.get("/appointments", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await appointments(req)
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+
+// route for getting revenue
+router.get("/revenue", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await revenue(req)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));

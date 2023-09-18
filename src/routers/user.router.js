@@ -18,7 +18,7 @@ const ContactModel = require("../models/users/contactUs.model")
 const HomeServiceModel = require("../models/users/homeService.model")
 const { v4: uuidv4 } = require('uuid');
 const SalonModel = require("../models/client/salon.model")
-const {newAppointment, cancelAppointment} = require("../controller/users/appointment.controller")
+const {newAppointment, cancelAppointment, reScheduleAppointment, appointments} = require("../controller/users/appointment.controller")
 // const {handleWebhook} = require("../controller/users/razorpay.controller")
 const appointmentValidator = require("../middleware/users/appointment.validation")
 // router for user or customer registration
@@ -114,6 +114,7 @@ router.get("/showtimings/:uuid", tokenAuthentication, async (req, res) => {
     }
 })
 
+// route for creating appointments 
 router.post("/create_appointment", tokenAuthentication, appointmentValidator, async (req, res) => {
     let response;
     try {
@@ -124,11 +125,37 @@ router.post("/create_appointment", tokenAuthentication, appointmentValidator, as
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 })
+
+// route for cancelling the appointment 
 router.get("/cancel_appointment/:uuid", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await cancelAppointment(req)
-        return res.send(response)
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+
+// route for reschedule the appointments 
+router.post("/reschedule_appointment", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await reScheduleAppointment(req)
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+
+// route for getting all appointments 
+router.get("/appointments", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await appointments(req)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));

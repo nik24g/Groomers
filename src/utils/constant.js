@@ -49,7 +49,9 @@ const error = {
     SLOT_NOT_FOUND: "Slot not found with this uuid.",
     NOT_FOUND: "Not found",
     SLOT_NOT_AVAILABLE: "Containing Slot not available. It may be fully booked or not Active",
-    PAYMENT_FAILED: "Payment is failed. Try again."
+    PAYMENT_FAILED: "Payment is failed. Try again.",
+    CAN_NOT_CANCEL: "You cannot cancel the appointment within 1 hour of the appointment time.",
+    CAN_NOT_RESCHEDULE: "You cannot re-schedule the appointment within 1 hour of the appointment time."
 }
 
 
