@@ -24,6 +24,7 @@ const newAppointment = async (req) => {
     const slotUuids = req.body.slot_uuids || []
     const duration = req.body.duration
     const timing = req.body.timing
+    const date = req.body.date
     const receivedServices = req.body.services || []
     const receivedCombos = req.body.combos || []
     const isGuestAppointment = req.body.is_guest_appointment || false
@@ -67,7 +68,7 @@ const newAppointment = async (req) => {
         appointment_timing: timing,
         appointment_services: services,
         appointment_combos: combos,
-        appointment_date: moment().format("DD/MM/YYYY"),
+        appointment_date: date,
         appointment_user_phone: guestMobile || req.mobile,
         appointment_user_full_name: guestFullName || req.fullName,
         appointment_status: "pending",
@@ -97,18 +98,18 @@ const newAppointment = async (req) => {
 const cancelAppointment = async (req) => {
     const appointmentUuid = req.params.uuid
     const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
-    const appointmentTime = appointment.appointment_timing //(9:00 am)
-    // there is a condition for cancel the appointment that user can not cancel the appointment if he tries to cancel just 1 hour before appointment
+    const appointmentTime = appointment.appointment_timing; // e.g., '9:00 am'
+    const appointmentDate = appointment.appointment_date; // e.g., '18/09/2023'
+    // there is a condition for cancel the appointment that user can not cancel the appointment if he tries to cancel just 2 hour before appointment
     // so we need to validate that timing with users current time
     // ...validation code
+    // Parse the appointment date and time as moment objects
+    const appointmentDateTime = moment(`${appointmentDate} ${appointmentTime}`, 'DD/MM/YYYY h:mm a');
     const currentTime = moment();
-    // const currentTime = moment('8:59 am', 'h:mm A');
-    // Parse the appointment time
-    const appointmentDateTime = moment(appointmentTime, 'h:mm A');
-    // Calculate time difference in minutes
-    const timeDifferenceMinutes = appointmentDateTime.diff(currentTime, 'minutes');
-    // Check if it's less than 60 minutes (1 hour)
-    if (timeDifferenceMinutes <= 60) {
+    // const currentTime = moment(`19/09/2023 8:00 am`, 'DD/MM/YYYY h:mm a');
+
+    // Check if the appointment time is in the past or within the next hour
+    if (currentTime.isAfter(appointmentDateTime) || currentTime.add(2, 'hour').isAfter(appointmentDateTime)) {
         // The appointment cannot be canceled
         return errorResponse(400, messages.error.CAN_NOT_CANCEL, {});
     }
@@ -141,20 +142,14 @@ const cancelAppointment = async (req) => {
 }
 
 const reScheduleAppointment = async (req) => {
-    // use can not re-schedule appointment just before 1 hour of appointment time.
-    // user can reschedule his appointment if it is 1 hours before the scheduled slot.
-    const slotUuids = req.body.slot_uuids || []
-    const duration = req.body.duration
-    const timing = req.body.timing
-    const receivedServices = req.body.services || []
-    const receivedCombos = req.body.combos || []
-    const isGuestAppointment = req.body.is_guest_appointment || false
-    const guestFullName = req.body.full_name
-    const guestMobile = req.body.mobile
-    const appointmentBookingId = uuidv4()
-
+    // use can not re-schedule appointment within and after appointment time.
     const appointmentUuid = req.body.appointment_uuid
+    const slotUuids = req.body.slot_uuids || []
+    const time = req.body.time
+    const date = req.body.date
+
     const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
+    const appointmentBookingId = uuidv4()
 
 }
 

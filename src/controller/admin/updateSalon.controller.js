@@ -52,7 +52,6 @@ const updateSalon = async (req, res) => {
     salon_state: req.body.state,
     salon_location: location,
     salon_franchise: req.body.franchise,
-    salon_franchise_list: JSON.parse(req.body.franchise_salon),
     salon_slots: req.body.slots_number,
     salon_services: services,
     salon_combo_services: combo_services,
@@ -66,21 +65,26 @@ const updateSalon = async (req, res) => {
     salon_owner_pancard_number: req.body.owner_pancard_number,
     salon_bank_name: req.body.bank_name,
     salon_bank_account_number: req.body.bank_account_number,
-    salon_bank_IFSC_code: req.body.bank_IFSC_code,
+    salon_bank_IFSC_code: req.body.bank_IFSC_code
   };
-
-  console.log(req.body.should_update_image);
-  if (req.body.should_update_image) {
+  if(req.body.block_dates){
+    updatedDetails.salon_block_dates = req.body.block_dates
+  }
+  if(req.body.franchise == "true"){
+    updatedDetails.salon_franchise_list = JSON.parse(req.body.franchise_salon)
+  }
+  // console.log(req.body.should_update_image);
+  if (req.body.should_update_image == "true") {
     const photosPath = req.files.map((file) => file.path);
     updatedDetails.salon_photos = photosPath;
   }
-  // const updatedSalon = await SalonModel.findOneAndUpdate(
-  //   { salon_uuid: SalonUuid },
-  //   updatedDetails,
-  //   { new: true }
-  // );
-  // return successResponse(202, messages.success.SALON_UPDATED, updatedSalon);
-  return successResponse(202, messages.success.SALON_UPDATED, updatedDetails);
+  const updatedSalon = await SalonModel.findOneAndUpdate(
+    { salon_uuid: SalonUuid },
+    updatedDetails,
+    { new: true }
+  );
+  return successResponse(202, messages.success.SALON_UPDATED, updatedSalon);
 };
 
 module.exports = updateSalon;
+

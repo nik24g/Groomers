@@ -51,7 +51,7 @@ const newSalonValidation = async (req, res, next) => {
         bank_IFSC_code: req.body.bank_IFSC_code
     };
     if (req.body.franchise_salon){
-      payload.franchise_list = JSON.parse(req.body.franchise_salon)
+      payload.franchise_salon = JSON.parse(req.body.franchise_salon)
     }
 	const { error } = validation.validate(payload);
 

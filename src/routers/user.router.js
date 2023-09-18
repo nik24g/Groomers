@@ -19,8 +19,8 @@ const HomeServiceModel = require("../models/users/homeService.model")
 const { v4: uuidv4 } = require('uuid');
 const SalonModel = require("../models/client/salon.model")
 const {newAppointment, cancelAppointment, reScheduleAppointment, appointments} = require("../controller/users/appointment.controller")
-// const {handleWebhook} = require("../controller/users/razorpay.controller")
 const appointmentValidator = require("../middleware/users/appointment.validation")
+const rescheduleValidator = require("../middleware/users/reschedule.validation")
 // router for user or customer registration
 router.post("/registration", registrationValidator, async (req, res) => {
     try {
@@ -139,7 +139,7 @@ router.get("/cancel_appointment/:uuid", tokenAuthentication, async (req, res) =>
 })
 
 // route for reschedule the appointments 
-router.post("/reschedule_appointment", tokenAuthentication, async (req, res) => {
+router.post("/reschedule_appointment", tokenAuthentication, rescheduleValidator, async (req, res) => {
     let response;
     try {
         response = await reScheduleAppointment(req)

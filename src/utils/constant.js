@@ -25,7 +25,9 @@ const success = {
     APPOINTMENT_BOOKED: "Your appointment is now booked.",
     PAYMENT_PENDING: "Payment is pending. Try again for payment status after 5 second.",
     SALON_DELETED: "Salon is deleted.",
-    APPOINTMENT_CANCEL: "Your appointment is now cancelled and your refund is being initiated."
+    APPOINTMENT_CANCEL: "Your appointment is now cancelled and your refund is being initiated.",
+    SALON_ENABLE: "Salon is now enabled.",
+    SALON_DISABLE: "Salon is now disabled.",
 }
 const error = {
     WRONG: "Something went wrong..",
@@ -50,8 +52,10 @@ const error = {
     NOT_FOUND: "Not found",
     SLOT_NOT_AVAILABLE: "Containing Slot not available. It may be fully booked or not Active",
     PAYMENT_FAILED: "Payment is failed. Try again.",
-    CAN_NOT_CANCEL: "You cannot cancel the appointment within 1 hour of the appointment time.",
-    CAN_NOT_RESCHEDULE: "You cannot re-schedule the appointment within 1 hour of the appointment time."
+    CAN_NOT_CANCEL: "You cannot cancel the appointment within 2 hour of the appointment time or after the appointment time.",
+    CAN_NOT_RESCHEDULE: "You cannot re-schedule the appointment within 1 hour of the appointment time.",
+    CODE_CHAR_REQ: "Salon code first 3 characters are required to send in query parameter.",
+    CODE_CHAR_LEN: "Salon code key should have length of 3."
 }
 
 

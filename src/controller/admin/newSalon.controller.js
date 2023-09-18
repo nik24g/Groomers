@@ -56,7 +56,6 @@ const addNewSalon = async (req) => {
     salon_state: req.body.state,
     salon_location: location,
     salon_franchise: req.body.franchise,
-    salon_franchise_list: JSON.parse(req.body.franchise_salon),
     salon_slots: req.body.slots_number,
     salon_services: services,
     salon_combo_services: combo_services,
@@ -73,9 +72,11 @@ const addNewSalon = async (req) => {
     salon_bank_account_number: req.body.bank_account_number,
     salon_bank_IFSC_code: req.body.bank_IFSC_code,
   });
+  if(req.body.franchise == "true"){
+    salon.salon_franchise_list = JSON.parse(req.body.franchise_salon)
+  }
   const response = await salon.save();
   return successResponse(201, messages.success.SALON_ADDED, { response });
-  // return successResponse(201, messages.success.SALON_ADDED, { data: req.body });
 };
 
 module.exports = addNewSalon;

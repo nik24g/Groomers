@@ -175,7 +175,11 @@ const salonSchema = new schema({
         {
             type: String
         }    
-    ]
+    ],
+    salon_isActive: {
+        type: Boolean,
+        default: true
+    }
 },
     { timestamps: true }
 );

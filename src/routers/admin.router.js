@@ -17,7 +17,7 @@ const {getFeedback, deleteFeedback} = require("../controller/admin/feedback.cont
 const ContactModel = require("../models/users/contactUs.model")
 const HomeServiceModel = require("../models/users/homeService.model")
 const newSalonValidation = require("../middleware/admin/newSalon.joi.validator")
-const {deleteSalonBySalonId} = require("../controller/admin/deleteSalon.controller")
+const {deleteSalonBySalonId, toggleSalon, salonCode} = require("../controller/admin/salon.controller")
 
 // route for creating new admin 
 router.post("/registration", newAdminValidator, async (req, res) => {
@@ -94,12 +94,38 @@ router.delete("/delete-by-id", tokenAuthentication, async (req, res) => {
     try {
         if(!req.body.salon_code) return res.status(400).json(errorResponse(400, "Salon code is required", {}))
         response = await deleteSalonBySalonId(req);
-        return res.status(200).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG))
     }
 })
+
+// route for enable and disable the salon or a salon toggle route
+router.patch("/toggle-salon", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        if(!req.body.salon_code) return res.status(400).json(errorResponse(400, "Salon code is required", {}))
+        response = await toggleSalon(req);
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(errorResponse(500, messages.error.WRONG))
+    }
+})
+
+// route for getting salon code for upcoming salon
+router.get("/salon-code", tokenAuthentication, async (req, res) => {
+    let response;
+    try {
+        response = await salonCode(req);
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(errorResponse(500, messages.error.WRONG))
+    }
+})
+
 router.post("/generateSlotOnBoard", async (req, res)=>{
     let response;
     try {
