@@ -31,6 +31,7 @@ const newSalonValidation = async (req, res, next) => {
         name: req.body.name,
         type: req.body.type,
         address: req.body.address,
+        area: req.body.area,
         city: req.body.city,
         state: req.body.state,
         location: req.body.location,

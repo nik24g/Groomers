@@ -7,6 +7,7 @@ const salonSchema = Joi.object({
     name: Joi.string().required(),
     type: Joi.string().valid('male', 'female', 'unisex').required(),
     address: Joi.string().min(10).required(),
+    area: Joi.string().min(3).required(),
     city: Joi.string().required().min(3).max(20),
     state: Joi.string().required().min(3).max(20),
     location: Joi.string().pattern(/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/).required(),

@@ -50,6 +50,7 @@ const updateSalon = async (req, res) => {
     salon_name: req.body.name,
     salon_type: req.body.type,
     salon_address: req.body.address,
+    salon_area: req.body.area,
     salon_city: req.body.city,
     salon_state: req.body.state,
     salon_location: location,

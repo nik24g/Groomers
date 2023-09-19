@@ -36,6 +36,10 @@ const salonSchema = new schema({
         type: String,
         required: true,
     },
+    salon_area: {
+        type: String,
+        required: true,
+    },
     salon_city: {
         type: String,
     },
