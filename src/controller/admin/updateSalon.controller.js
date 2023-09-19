@@ -37,7 +37,7 @@ const updateSalon = async (req, res) => {
       combo_name: combo.combo_name,
       combo_services_name: combo.services,
       combo_price: combo.combo_price,
-      combo_duration: combo.combo_duration
+      combo_duration: combo.duration
     };
     return combo;
   });
