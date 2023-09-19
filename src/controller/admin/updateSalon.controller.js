@@ -13,6 +13,7 @@ const updateSalon = async (req, res) => {
       service_name: service.name,
       service_discount: service.discount,
       service_original_price: service.price,
+      service_duration: service.duration
     };
     return structuredService;
   });
@@ -36,6 +37,7 @@ const updateSalon = async (req, res) => {
       combo_name: combo.combo_name,
       combo_services_name: combo.services,
       combo_price: combo.combo_price,
+      combo_duration: combo.combo_duration
     };
     return combo;
   });
@@ -68,7 +70,7 @@ const updateSalon = async (req, res) => {
     salon_bank_IFSC_code: req.body.bank_IFSC_code
   };
   if(req.body.block_dates){
-    updatedDetails.salon_block_dates = req.body.block_dates
+    updatedDetails.salon_block_dates = JSON.parse(req.body.block_dates)
   }
   if(req.body.franchise == "true"){
     updatedDetails.salon_franchise_list = JSON.parse(req.body.franchise_salon)
