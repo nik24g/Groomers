@@ -8,21 +8,9 @@ function validateTime(time) {
   return time;
 }
 
-// Custom validation function to calculate required length of slot_uuids array
-function calculateSlotUuidsLength(value, helpers) {
-  const duration = value.duration;
-  const requiredLength = Math.ceil(duration / 15);
-
-  if (value.slot_uuids.length !== requiredLength) {
-    return helpers.message(`The 'slot_uuids' array length should be ${requiredLength}.`);
-  }
-
-  return value;
-}
-
 const validation = Joi.object({
   salon_uuid: Joi.string().length(36).required(),
-  slot_uuids: Joi.array().items(Joi.string().length(36)).required(),
+  slot_uuid: Joi.string().length(36).required(),
   duration: Joi.number().min(15).required(),
   timing: Joi.string().custom(validateTime).required(),
   date: Joi.string().pattern(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).required(), // DD/MM/YYYY format
@@ -40,6 +28,5 @@ const validation = Joi.object({
     otherwise: Joi.forbidden(),
   }),
 })
-  .custom(calculateSlotUuidsLength); // Apply custom validation
 
 module.exports = validation;

@@ -50,12 +50,13 @@ const error = {
     OTHER_SALON_INFO: "You are not authorise to perform this task.",
     SLOT_NOT_FOUND: "Slot not found with this uuid.",
     NOT_FOUND: "Not found",
-    SLOT_NOT_AVAILABLE: "Containing Slot not available. It may be fully booked or not Active",
+    SLOT_NOT_AVAILABLE: "Selected slot is not found. It may be fully booked or not Active",
     PAYMENT_FAILED: "Payment is failed. Try again.",
     CAN_NOT_CANCEL: "You cannot cancel the appointment within 2 hour of the appointment time or after the appointment time.",
     CAN_NOT_RESCHEDULE: "You cannot re-schedule the appointment within 1 hour of the appointment time.",
     CODE_CHAR_REQ: "Salon code first 3 characters are required to send in query parameter.",
-    CODE_CHAR_LEN: "Salon code key should have length of 3."
+    CODE_CHAR_LEN: "Salon code key should have length of 3.",
+    SALON_NOT_ACTIVE: "Salon is not active."
 }
 
 

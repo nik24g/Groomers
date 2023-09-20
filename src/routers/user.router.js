@@ -35,7 +35,7 @@ router.post("/registration/generateOtp", generateOtpValidator, async (req, res) 
     let response;
     try {
         response = await OtpGenerate(req, res);
-        res.send(response)
+        res.status(response.status).json(response)
     } catch (error) {
 
         res.send(errorResponse(500, messages.error.WRONG))
@@ -46,7 +46,7 @@ router.post("/registration/verification", verifyOtp, async (req, res) => {
     let response;
     try {
         response = await verifyNewUser(req, res);
-        res.send(response)
+        res.status(response.status).json(response)
     } catch (error) {
         res.send(errorResponse(500, messages.error.WRONG))
     }
@@ -57,7 +57,7 @@ router.post("/login/generateOtp", generateOtpValidator, async (req, res) => {
     let response;
     try {
         response = await OtpGenerate(req, res);
-        res.send(response)
+        res.status(response.status).json(response)
     } catch (error) {
         res.send(errorResponse(500, messages.error.WRONG))
     }
@@ -67,36 +67,40 @@ router.post("/login/verification", loginJoiValidator, async (req, res) => {
     let response;
     try {
         response = await loginUser(req, res);
-        return res.send(response);
+        return res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 });
+
+// route for getting all salon in the city with authentication 
 router.get("/auth-salons", tokenAuthentication, async (req, res) => {
     try {
         const city = req.query.city
-        const salons = await SalonModel.find({ salon_city: city }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 })
+// route for getting all salon in the city without authentication 
 router.get("/salons", async (req, res) => {
     try {
         const city = req.query.city
-        const salons = await SalonModel.find({ salon_city: city }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 })
+// route for searching salons by name
 router.get("/search/salon", async (req, res) => {
     try {
         const salonName = req.query.name
-        const salons = await SalonModel.find({ "salon_name": { "$regex": salonName, "$options": "i" } }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const salons = await SalonModel.find({ "salon_name": { "$regex": salonName, "$options": "i" }, salon_isActive: true }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
@@ -107,7 +111,7 @@ router.get("/showtimings/:uuid", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await showTimming(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -119,7 +123,7 @@ router.post("/create_appointment", tokenAuthentication, appointmentValidator, as
     let response;
     try {
         response = await newAppointment(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -166,7 +170,7 @@ router.post("/wishlist/create", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await createWishList(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -176,7 +180,7 @@ router.get("/wishlist/getwishlist", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await getWishList(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -186,7 +190,7 @@ router.delete("/wishlist/delete", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await deleteWishList(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -197,7 +201,7 @@ router.post("/feedback/create", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await createFeedback(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -207,7 +211,7 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await getFeedback(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));

@@ -7,7 +7,7 @@ const moment = require('moment');
 
 const generateDailySlots = async (req)=>{
     const today = moment
-    const salon = await SalonModel.find().select("salon_uuid -_id")
+    const salon = await SalonModel.find({salon_isActive: true}).select("salon_uuid -_id")
     const allUuid = salon.map((uuidObj)=>{
         const uuid = uuidObj.salon_uuid
         return uuid

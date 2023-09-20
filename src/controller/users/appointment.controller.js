@@ -21,7 +21,8 @@ const {increaseSlotsCount} = require("../../services/updateSlot")
 const newAppointment = async (req) => {
     const receivedUserUuid = req.uuid
     const receivedSalonUuid = req.body.salon_uuid
-    const slotUuids = req.body.slot_uuids || []
+    // for slot uuids we are using middleware for validating and getting from database then attach with request object
+    const slotUuids = req.slotUuids
     const duration = req.body.duration
     const timing = req.body.timing
     const date = req.body.date

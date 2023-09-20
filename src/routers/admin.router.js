@@ -34,7 +34,7 @@ router.post("/login", adminLoginJoiValidator, async (req, res) => {
     let response;
     try {
         response = await loginAdmin(req, res);
-        return res.send(response);
+        return res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -70,7 +70,7 @@ router.get("/salons", tokenAuthentication, async (req, res)=>{
     let response;
     try {
         response = await getSalonById(req);
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
@@ -150,7 +150,7 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await getFeedback(req)
-        return res.send(response)
+        return res.status(response.status).json(response)
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));
