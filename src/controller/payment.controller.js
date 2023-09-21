@@ -137,7 +137,6 @@ const chechPaymentStatus = async (req, res) => {
                     refund_options: JSON.stringify(refundData)
                 })
                 await refundObj.save()
-
                 // updating appointment status 
                 appointment.appointment_status = "rejected"
                 appointment.appointment_payment_status = "refund"
@@ -149,6 +148,28 @@ const chechPaymentStatus = async (req, res) => {
             }
             // now all selected slots are available so we can update
             // updating appointment as for success booking
+            // checking is appointment is re-appointment or is this scheduled appointment or not if yes then update appointment in that way
+            if(appointment.appointment_previous_appointment_uuid){
+                // it means it is re-appointment so we will update old appointment also 
+                const oldAppointment = await AppointmentModel.findOne({appointment_uuid: appointment.appointment_previous_appointment_uuid})
+                oldAppointment.appointment_status = "scheduled"
+                oldAppointment.appointment_is_active = false
+                await oldAppointment.save()
+                // also we need to update old slot timings status like we need to add +1 in their slot_count
+                const oldSlotUuids = oldAppointment.appointment_slot_uuids
+                for (const uuid of oldSlotUuids) {
+                    const slot = await SlotModel.findOne({slot_uuid: uuid})
+                    if (slot.slot_count == 0){
+                        slot.slot_count = 1
+                        slot.slot_isActive = true
+                        slot.slot_status = "available"
+                    }
+                    else{
+                        slot.slot_count += 1
+                    }
+                    await slot.save()
+                }
+            }
             appointment.appointment_status = "booked"
             appointment.appointment_payment_status = "completed"
             appointment.appointment_is_payment_done = true
@@ -227,6 +248,28 @@ const chechPaymentStatus = async (req, res) => {
             }
             // now all selected slots are available so we can update
             // updating appointment as for success booking
+            // checking is appointment is re-appointment or is this scheduled appointment or not if yes then update appointment in that way
+            if(appointment.appointment_previous_appointment_uuid){
+                // it means it is re-appointment so we will update old appointment also 
+                const oldAppointment = await AppointmentModel.findOne({appointment_uuid: appointment.appointment_previous_appointment_uuid})
+                oldAppointment.appointment_status = "scheduled"
+                oldAppointment.appointment_is_active = false
+                await oldAppointment.save()
+                // also we need to update old slot timings status like we need to add +1 in their slot_count
+                const oldSlotUuids = oldAppointment.appointment_slot_uuids
+                for (const uuid of oldSlotUuids) {
+                    const slot = await SlotModel.findOne({slot_uuid: uuid})
+                    if (slot.slot_count == 0){
+                        slot.slot_count = 1
+                        slot.slot_isActive = true
+                        slot.slot_status = "available"
+                    }
+                    else{
+                        slot.slot_count += 1
+                    }
+                    await slot.save()
+                }
+            }
             appointment.appointment_status = "booked"
             appointment.appointment_payment_status = "completed"
             appointment.appointment_is_payment_done = true

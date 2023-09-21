@@ -6,17 +6,16 @@ const SlotModel = require("../../models/client/slot.model");
 const showTimmings = async (req) => {
     const salonUuid = req.params.uuid;
     const serviceDuration = req.query.duration;
-    const date = req.query.date
+    const date = req.query.date || moment().format("DD/MM/YYYY")
     const dbSlots = await SlotModel.find({
         slot_salon_uuid: salonUuid,
         slot_isActive: true,
         slot_isExpire: false,
-        slot_date: date || moment().format("DD/MM/YYYY"),
+        slot_date: date,
     }).select("-_id slot_uuid slot_time");
-
     // Current time is 2:12 PM
-    const currentTime = moment('9:39 PM', 'h:mm A');
-    // const currentTime = moment();
+    // const currentTime = moment('9:39 PM', 'h:mm A');
+    const currentTime = moment();
 
     // we will chech user want to see todays slots or anthor day's slots 
     // if user want to see todays slots then we will validate the slots time is acheived or not

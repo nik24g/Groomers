@@ -113,11 +113,9 @@ const appointmentSchema = new schema({
     },
     appointment_original_price: {
         type: String,
-        required: true
     },
     appointment_discounted_price: {
         type: String,
-        required: true
     },
     appointment_subtotal: {
         type: String,
@@ -128,6 +126,9 @@ const appointmentSchema = new schema({
         default: false
     },
     appointment_previous_appointment_uuid: {
+        type: String
+    },
+    appointment_previous_payment: {
         type: String
     },
     appointment_refund_amount: {

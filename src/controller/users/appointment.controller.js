@@ -93,7 +93,7 @@ const newAppointment = async (req) => {
         payment_code: payment.code
     })
     await newPayment.save()
-    return successResponse(201, messages.success.SUCCESS, { order: payment })
+    return successResponse(201, messages.success.APPOINTMENT_INITIATED, { order: payment })
 }
 
 const cancelAppointment = async (req) => {
@@ -145,13 +145,69 @@ const cancelAppointment = async (req) => {
 const reScheduleAppointment = async (req) => {
     // use can not re-schedule appointment within and after appointment time.
     const appointmentUuid = req.body.appointment_uuid
-    const slotUuids = req.body.slot_uuids || []
-    const time = req.body.time
+    const slotUuids = req.slotUuids
+    const timing = req.body.timing
     const date = req.body.date
-
-    const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
     const appointmentBookingId = uuidv4()
 
+    const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
+
+    const appointmentTime = appointment.appointment_timing; // e.g., '9:00 am'
+    const appointmentDate = appointment.appointment_date; // e.g., '18/09/2023'
+    // there is a condition for reschedule the appointment that user can not reschedule the appointment if he tries to reschedule just 1 hour before appointment time
+    // so we need to validate that timing with users current time
+    // ...validation code
+    // Parse the appointment date and time as moment objects
+    const appointmentDateTime = moment(`${appointmentDate} ${appointmentTime}`, 'DD/MM/YYYY h:mm a');
+    const currentTime = moment();
+    // const currentTime = moment(`22/09/2023 9:15 am`, 'DD/MM/YYYY h:mm a');
+
+    // Check if the appointment time is in the past or within the next hour
+    if (currentTime.isAfter(appointmentDateTime) || currentTime.add(1, 'hour').isAfter(appointmentDateTime)) {
+        // The appointment cannot be canceled
+        return errorResponse(400, messages.error.CAN_NOT_RESCHEDULE, {});
+    }
+
+    // calculating subtotal
+    // as this is reschedule so user already done payment for services but he need to pay 10% of reschedule charges.
+    const subtotal = parseFloat(appointment.appointment_subtotal) * 10 / 100
+    const newAppointment = new AppointmentModel({
+        appointment_uuid: uuidv4(),
+        appointment_is_reappointment: true,
+        appointment_previous_appointment_uuid: appointmentUuid,
+        appointment_booking_id: appointmentBookingId,
+        appointment_is_guest: appointment.appointment_is_guest,
+        appointment_user_uuid: appointment.appointment_user_uuid,
+        appointment_salon_uuid: appointment.appointment_salon_uuid,
+        appointment_slot_uuids: slotUuids,
+        appointment_duration: appointment.appointment_duration,
+        appointment_timing: timing,
+        appointment_services: appointment.appointment_services,
+        appointment_combos: appointment.appointment_combos,
+        appointment_date: date,
+        appointment_user_phone: appointment.appointment_user_phone,
+        appointment_user_full_name: appointment.appointment_user_full_name,
+        appointment_status: "pending",
+        appointment_previous_payment: appointment.appointment_previous_payment,
+        appointment_subtotal: subtotal,
+        appointment_payment_status: "pending"
+    })
+    await newAppointment.save()
+
+    // now we will initiate payment 
+    const payment = await initiatePayment(subtotal, appointmentBookingId, req.uuid)
+    // storing payment details in db
+    const newPayment = new PaymentModel({
+        payment_uuid: uuidv4(),
+        payment_user_uuid: req.uuid,
+        payment_salon_uuid: appointment.appointment_salon_uuid,
+        payment_amount: subtotal,
+        payment_merchant_transaction_id: appointmentBookingId,
+        payment_status: "initiated",
+        payment_code: payment.code
+    })
+    await newPayment.save()
+    return successResponse(201, messages.success.RESCHEDULE_APPOINTMENT_INITIATED, { order: payment })
 }
 
 const appointments = async (req) => {

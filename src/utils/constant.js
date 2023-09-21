@@ -28,6 +28,8 @@ const success = {
     APPOINTMENT_CANCEL: "Your appointment is now cancelled and your refund is being initiated.",
     SALON_ENABLE: "Salon is now enabled.",
     SALON_DISABLE: "Salon is now disabled.",
+    APPOINTMENT_INITIATED: "Your appointment for selected slot is initiated. Now please complete payment for booking.",
+    RESCHEDULE_APPOINTMENT_INITIATED: "Your reschedule appointment for selected slot is initiated. Now please complete payment for booking."
 }
 const error = {
     WRONG: "Something went wrong..",
@@ -56,7 +58,9 @@ const error = {
     CAN_NOT_RESCHEDULE: "You cannot re-schedule the appointment within 1 hour of the appointment time.",
     CODE_CHAR_REQ: "Salon code first 3 characters are required to send in query parameter.",
     CODE_CHAR_LEN: "Salon code key should have length of 3.",
-    SALON_NOT_ACTIVE: "Salon is not active."
+    SALON_NOT_ACTIVE: "Salon is not active.",
+    CAN_NOT_PERFORM_TASK: "Can not perform this task",
+    APPOINTMENT_ALREADY_RESCHEDULED: "This appointment is already rescheduled.",
 }
 
 

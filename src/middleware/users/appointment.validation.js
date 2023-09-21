@@ -29,9 +29,9 @@ const checkAppointment = async (req, res, next) => {
 
         const slot = await SlotModel.findOne({slot_uuid: slotUuid, slot_isActive: true, slot_date: req.body.date, slot_time: req.body.timing})
         // console.log(slot);
+        if(!slot) return res.status(400).json(errorResponse(400, messages.error.SLOT_NOT_AVAILABLE, {}));
         const slotUuids = []
         slotUuids.push(slotUuid)
-        if(!slot) return res.status(400).json(errorResponse(400, messages.error.SLOT_NOT_AVAILABLE, {}));
         const numberOfSlots = parseInt(req.body.duration) / 15
         const slotTime = moment(slot.slot_time, 'h:mm A');
         for (let i = 0; i < numberOfSlots - 1; i++) {
