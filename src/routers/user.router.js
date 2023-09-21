@@ -35,7 +35,7 @@ router.post("/registration/generateOtp", generateOtpValidator, async (req, res) 
     let response;
     try {
         response = await OtpGenerate(req, res);
-        res.status(response.status).json(response)
+        res.status(response.code).json(response)
     } catch (error) {
 
         res.send(errorResponse(500, messages.error.WRONG))
@@ -46,7 +46,7 @@ router.post("/registration/verification", verifyOtp, async (req, res) => {
     let response;
     try {
         response = await verifyNewUser(req, res);
-        res.status(response.status).json(response)
+        res.status(response.code).json(response)
     } catch (error) {
         res.send(errorResponse(500, messages.error.WRONG))
     }
@@ -57,7 +57,7 @@ router.post("/login/generateOtp", generateOtpValidator, async (req, res) => {
     let response;
     try {
         response = await OtpGenerate(req, res);
-        res.status(response.status).json(response)
+        res.status(response.code).json(response)
     } catch (error) {
         res.send(errorResponse(500, messages.error.WRONG))
     }
@@ -67,7 +67,7 @@ router.post("/login/verification", loginJoiValidator, async (req, res) => {
     let response;
     try {
         response = await loginUser(req, res);
-        return res.status(response.status).json(response);
+        return res.status(response.code).json(response);
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -111,7 +111,7 @@ router.get("/showtimings/:uuid", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await showTimming(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -123,7 +123,7 @@ router.post("/create_appointment", tokenAuthentication, appointmentValidator, as
     let response;
     try {
         response = await newAppointment(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -170,7 +170,7 @@ router.post("/wishlist/create", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await createWishList(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -180,7 +180,7 @@ router.get("/wishlist/getwishlist", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await getWishList(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -190,7 +190,7 @@ router.delete("/wishlist/delete", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await deleteWishList(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -201,7 +201,7 @@ router.post("/feedback/create", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await createFeedback(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
@@ -211,7 +211,7 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await getFeedback(req)
-        return res.status(response.status).json(response)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
