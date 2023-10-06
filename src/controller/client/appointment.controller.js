@@ -39,4 +39,15 @@ const appointments = async (req) => {
     return successResponse(200, messages.success.SUCCESS, {appointments: appointments})
 }
 
-module.exports = {appointments}
+const markCompleteAppointment = async (req) => {
+    const appointmentUuid = req.body.appointment_uuid
+    const appointment = await AppointmentModel.findOne({appointment_uuid: appointmentUuid, appointment_status: "booked"})
+    if (!appointment) return errorResponse(400, messages.error.CAN_NOT_PERFORM_TASK, {})
+    appointment.appointment_status = "completed"
+    appointment.appointment_is_active = false
+    await appointment.save()
+    return successResponse(200, messages.success.SUCCESS, {})
+
+}
+
+module.exports = {appointments, markCompleteAppointment}

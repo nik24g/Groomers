@@ -61,7 +61,15 @@ const error = {
     SALON_NOT_ACTIVE: "Salon is not active.",
     CAN_NOT_PERFORM_TASK: "Can not perform this task",
     APPOINTMENT_ALREADY_RESCHEDULED: "This appointment is already rescheduled.",
+    CITY_NAME_REQ: "Bad request, City name is required to send.",
+    COORDINATES_REQ: "Bad request, Co-ordinated is required to send."
 }
 
+const subject = {
+    APPOINTMENT_CANCEL: "Groomer Appointment cancellation.",
+    APPOINTMENT_BOOKED: "Groomer Appointment Confirmation.",
+    APPOINTMENT_RESCHEDULED: "Groomer Appointment Rescheduled.",
+    PAYMENT_FAILED: "Payment is failed.",
 
-module.exports = { success, error};
+}
+module.exports = { success, error, subject};

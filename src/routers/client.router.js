@@ -12,6 +12,8 @@ const toggleSalon = require("../controller/client/toggleSalonHoliday.controller"
 const {getFeedback} = require("../controller/client/feedback.controller")
 const {appointments} = require("../controller/client/appointment.controller")
 const {revenue} = require("../controller/client/revenue.controller")
+const {markCompleteAppointment} = require("../controller/client/appointment.controller")
+const statusChangeValidation = require("../middleware/client/changeAppointmentStatus.validator")
 
 router.post("/login", clientLoginJoiValidator, async (req, res) => {
     let response;
@@ -97,6 +99,18 @@ router.get("/revenue", tokenAuthentication, async (req, res) => {
     let response;
     try {
         response = await revenue(req)
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+
+// router for updating appointment status from booked to complete
+router.patch("/update-appointments-status", tokenAuthentication, statusChangeValidation, async (req, res) => {
+    let response;
+    try {
+        response = await markCompleteAppointment(req)
         return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
