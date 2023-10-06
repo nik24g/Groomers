@@ -9,7 +9,7 @@ const revenue = async (req) => {
         appointment_salon_uuid: req.uuid
     }
     // adding status filter
-    filter.appointment_status = "booked"
+    filter.appointment_status = "completed"
     // adding date range filter 
     if (startDate && endDate) {
         const parsedStartDate = startDate;
@@ -24,7 +24,7 @@ const revenue = async (req) => {
     for (const booking of appointments) {
         totalRevenue += parseFloat(booking.appointment_subtotal)
     }
-    return successResponse(200, messages.success.SUCCESS, {revenue: totalRevenue})
+    return successResponse(200, messages.success.SUCCESS, {revenue: totalRevenue, totalAppointments: appointments.length})
 }
 
 module.exports = {revenue}
