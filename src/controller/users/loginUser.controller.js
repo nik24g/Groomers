@@ -21,6 +21,10 @@ const userLogin = async (req) => {
         if (otpData.otp_count < 3) {
             if (enteredOtp == otpData.otp_number) { 
                 // verify otp and generate token to log in 
+                if(!user.user_verified){
+                    user.user_verified = true
+                    await user.save()
+                }
                 let payload = { email: user.user_email, fullName: user.user_full_name, mobile: user.user_mobile, uuid: user.user_uuid }
                 token = jwt.sign(payload, process.env.USER_ACCESS_TOKEN_SECRET, { expiresIn: '60d' })
                 await OtpModel.findOneAndDelete({otp_uuid: otpData.otp_uuid});
