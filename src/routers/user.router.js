@@ -21,6 +21,8 @@ const SalonModel = require("../models/client/salon.model")
 const {newAppointment, cancelAppointment, reScheduleAppointment, appointments} = require("../controller/users/appointment.controller")
 const appointmentValidator = require("../middleware/users/appointment.validation")
 const rescheduleValidator = require("../middleware/users/reschedule.validation")
+const {salonsByCity, salonByUuid} = require("../controller/users/salon.controller")
+
 // router for user or customer registration
 router.post("/registration", registrationValidator, async (req, res) => {
     try {
@@ -88,14 +90,25 @@ router.get("/auth-salons", tokenAuthentication, async (req, res) => {
 // route for getting all salon in the city without authentication 
 router.get("/salons", async (req, res) => {
     try {
-        const city = req.query.city
-        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
-        return res.send(successResponse(201, messages.success.SUCCESS, salons))
+        const response = await salonsByCity(req)
+        return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
         return res.send(errorResponse(500, messages.error.WRONG));
     }
 })
+
+// route for getting one perticular salon details from salon uuid
+router.get("/salon", async (req, res) => {
+    try {
+        const response = await salonByUuid(req)
+        return res.status(response.code).json(response)
+    } catch (error) {
+        console.log(error);
+        return res.send(errorResponse(500, messages.error.WRONG));
+    }
+})
+
 // route for searching salons by name
 router.get("/search/salon", async (req, res) => {
     try {

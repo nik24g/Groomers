@@ -12,9 +12,10 @@ const { initiatePayment } = require("../payment.controller")
 const RefundModel = require("../../models/users/refund.model")
 const { refund } = require("../../services/refund")
 const {increaseSlotsCount} = require("../../services/updateSlot")
+const {sendConfirmationEmail} = require("../../services/email.service")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
-//if payment fails then we will not subtract count but if payment success then we will subtract it.
+// if payment fails then we will not subtract count but if payment success then we will subtract it.
 // appointment uuid will be also transection id
 // appointment status will be pending, booked, cancelled
 // appointment payment status will be pending, complete, failed
@@ -139,6 +140,7 @@ const cancelAppointment = async (req) => {
     await appointment.save()
     // after initiating refund we need to update slot availability because of appointment cancellation one slot is now available for other users
     await increaseSlotsCount(appointment.appointment_slot_uuids)
+    await sendConfirmationEmail(req.email, messages.subject.APPOINTMENT_CANCEL, "<h1>your appointment is now cancelled</h1>")
     return successResponse(200, messages.success.APPOINTMENT_CANCEL, {})
 }
 
@@ -170,7 +172,7 @@ const reScheduleAppointment = async (req) => {
 
     // calculating subtotal
     // as this is reschedule so user already done payment for services but he need to pay 10% of reschedule charges.
-    const subtotal = parseFloat(appointment.appointment_subtotal) * 10 / 100
+    const rescheduleCharge = parseFloat(appointment.appointment_subtotal) * 10 / 100
     const newAppointment = new AppointmentModel({
         appointment_uuid: uuidv4(),
         appointment_is_reappointment: true,
@@ -189,19 +191,20 @@ const reScheduleAppointment = async (req) => {
         appointment_user_full_name: appointment.appointment_user_full_name,
         appointment_status: "pending",
         appointment_previous_payment: appointment.appointment_previous_payment,
-        appointment_subtotal: subtotal,
+        appointment_subtotal: appointment.appointment_subtotal,
+        appointment_other_charges: JSON.stringify({"rescheduleCharge": rescheduleCharge}),
         appointment_payment_status: "pending"
     })
     await newAppointment.save()
 
     // now we will initiate payment 
-    const payment = await initiatePayment(subtotal, appointmentBookingId, req.uuid)
+    const payment = await initiatePayment(rescheduleCharge, appointmentBookingId, req.uuid)
     // storing payment details in db
     const newPayment = new PaymentModel({
         payment_uuid: uuidv4(),
         payment_user_uuid: req.uuid,
         payment_salon_uuid: appointment.appointment_salon_uuid,
-        payment_amount: subtotal,
+        payment_amount: rescheduleCharge,
         payment_merchant_transaction_id: appointmentBookingId,
         payment_status: "initiated",
         payment_code: payment.code
@@ -230,6 +233,9 @@ const appointments = async (req) => {
             $lte: parsedEndDate,
         };
     }
+    // Count total appointments
+    const totalAppointments = await AppointmentModel.countDocuments(filter);
+
     const options = {
         skip: (page - 1) * limit,
         limit: parseInt(limit),
@@ -240,10 +246,11 @@ const appointments = async (req) => {
             updatedAt: 0,
             appointment_is_reappointment: 0,
         },
+        sort: { createdAt: -1 }
     };
 
     const appointments = await AppointmentModel.find(filter, null, options);
-    return successResponse(200, messages.success.SUCCESS, {appointments: appointments})
+    return successResponse(200, messages.success.SUCCESS, { appointments, totalAppointments})
     
 }
 module.exports = { newAppointment, cancelAppointment, reScheduleAppointment, appointments }

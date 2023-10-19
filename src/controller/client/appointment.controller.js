@@ -23,6 +23,9 @@ const appointments = async (req) => {
             $lte: parsedEndDate,
         };
     }
+    // Count total appointments
+    const totalAppointments = await AppointmentModel.countDocuments(filter);
+
     const options = {
         skip: (page - 1) * limit,
         limit: parseInt(limit),
@@ -33,10 +36,11 @@ const appointments = async (req) => {
             updatedAt: 0,
             appointment_is_reappointment: 0,
         },
+        sort: { createdAt: -1 }
     };
 
     const appointments = await AppointmentModel.find(filter, null, options);
-    return successResponse(200, messages.success.SUCCESS, {appointments: appointments})
+    return successResponse(200, messages.success.SUCCESS, {appointments, totalAppointments})
 }
 
 const markCompleteAppointment = async (req) => {

@@ -62,7 +62,8 @@ const error = {
     CAN_NOT_PERFORM_TASK: "Can not perform this task",
     APPOINTMENT_ALREADY_RESCHEDULED: "This appointment is already rescheduled.",
     CITY_NAME_REQ: "Bad request, City name is required to send.",
-    COORDINATES_REQ: "Bad request, Co-ordinated is required to send."
+    COORDINATES_REQ: "Bad request, Co-ordinated is required to send.",
+    UUID_REQUIRED: "Uuid is required to send."
 }
 
 const subject = {
