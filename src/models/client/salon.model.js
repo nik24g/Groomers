@@ -112,7 +112,11 @@ const salonSchema = new schema({
         type: String,
         required: true,
     },
-    salon_lunch_time: {
+    salon_lunch_start_time: {
+        type: String,
+        required: true,
+    },
+    salon_lunch_end_time: {
         type: String,
         required: true,
     },

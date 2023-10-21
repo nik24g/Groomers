@@ -33,7 +33,8 @@ const salonSchema = Joi.object({
     })).required(),
     opening_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),
     closing_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),
-    lunch_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),
+    lunch_start_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),
+    lunch_end_time: Joi.string().regex(/^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/).required(),
     features: Joi.object({
         wifi: Joi.boolean().required(),
         parking: Joi.boolean().required(),
