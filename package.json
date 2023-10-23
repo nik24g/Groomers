@@ -4,7 +4,7 @@
   "description": "this project is for groomers company which want to connect all the salons online",
   "main": "app.js",
   "scripts": {
-    "start" : "nodemon app.js",
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,12 +23,14 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "firebase": "^10.4.0",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "mongoose": "^7.3.2",
     "multer": "^1.4.5-lts.1",
+    "node-geocoder": "^4.2.0",
     "nodemailer": "^6.9.3",
     "nodemon": "^3.0.1",
     "otp-generator": "^4.0.1",
