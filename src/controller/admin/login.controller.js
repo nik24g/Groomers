@@ -18,6 +18,7 @@ const adminLogin = async (req) => {
       let payload = {
         username: admin.admin_username,
         email: admin.admin_email,
+        uuid: admin.admin_uuid
       };
       token = jwt.sign(payload, process.env.ADMIN_ACCESS_TOKEN_SECRET, {
         expiresIn: "7d",

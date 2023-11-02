@@ -63,7 +63,10 @@ const error = {
     APPOINTMENT_ALREADY_RESCHEDULED: "This appointment is already rescheduled.",
     CITY_NAME_REQ: "Bad request, City name is required to send.",
     COORDINATES_REQ: "Bad request, Co-ordinated is required to send.",
-    UUID_REQUIRED: "Uuid is required to send."
+    UUID_REQUIRED: "Uuid is required to send.",
+    SLOT_FULLY_BOOKED: "The slot you want to toggle is fully booked by the customers so you can not disable or enable the slot.",
+    ALREADY_IN_WISHLIST: "This salon already found in this users wishlist",
+    CAN_NOT_GIVE_FEEDBACK: "You are unable to give feedback. Take service first in the salon."
 }
 
 const subject = {

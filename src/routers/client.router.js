@@ -6,8 +6,7 @@ const loginClient = require("../controller/client/loginClient.controller")
 const clientLoginJoiValidator = require("../middleware/client/login.joi.validator")
 const salonInfo = require("../controller/client/salonInfo.controller")
 const tokenAuthentication = require("../middleware/client/verifyTokenClient")
-const {disableSlot} = require("../controller/client/toggleSlot.controller.js")
-const {enableSlot} = require("../controller/client/toggleSlot.controller.js")
+const {toggleSlot} = require("../controller/client/slot.controller.js")
 const toggleSalon = require("../controller/client/toggleSalonHoliday.controller")
 const {getFeedback} = require("../controller/client/feedback.controller")
 const {appointments} = require("../controller/client/appointment.controller")
@@ -22,7 +21,7 @@ router.post("/login", clientLoginJoiValidator, async (req, res) => {
         return res.status(response.code).json(response);
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 });
 
@@ -33,32 +32,22 @@ router.get("/mysalon", tokenAuthentication, async (req, res) => {
         return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG, {}));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 
-// disable slot route
-router.get("/disable-slot", tokenAuthentication, async (req, res) => {
+// toggle slot route
+router.patch("/toggle-slot", tokenAuthentication, async (req, res) => {
     let response;
     try {
-        response = await disableSlot(req)
-        res.status(response.code).json(response)
+        response = await toggleSlot(req)
+        return res.status(response.code).json(response)
     } catch (error){
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG, {}));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
-// enable slot route
-router.get("/enable-slot", tokenAuthentication, async (req, res) => {
-    let response;
-    try {
-        response = await enableSlot(req)
-        res.status(response.code).json(response)
-    } catch (error){
-        console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG, {}));
-    }
-})
+
 
 // toggle Salon for holiday for that day
 router.get("/toggleSalonHoliday", tokenAuthentication, async (req, res) => {
@@ -68,7 +57,7 @@ router.get("/toggleSalonHoliday", tokenAuthentication, async (req, res) => {
         res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG, {}));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
@@ -78,7 +67,7 @@ router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
         return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 
@@ -90,7 +79,7 @@ router.get("/appointments", tokenAuthentication, async (req, res) => {
         return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 
@@ -102,7 +91,7 @@ router.get("/revenue", tokenAuthentication, async (req, res) => {
         return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 
@@ -114,7 +103,7 @@ router.patch("/update-appointments-status", tokenAuthentication, statusChangeVal
         return res.status(response.code).json(response)
     } catch (error) {
         console.log(error);
-        return res.send(errorResponse(500, messages.error.WRONG));
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
     }
 })
 module.exports = router;

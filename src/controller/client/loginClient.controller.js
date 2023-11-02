@@ -12,7 +12,7 @@ const login = async (req, res) => {
     // checking password matching or not
     if (user.salon_password == password) {
         let payload = {username: user.salon_username, uuid: user.salon_uuid, salonName: user.salon_name }
-        token = jwt.sign(payload, process.env.CLIENT_ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+        let token = jwt.sign(payload, process.env.CLIENT_ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
         return successResponse(200, messages.success.LOGGED_IN, {token: token})
     }
     else{

@@ -50,15 +50,6 @@ const salonSchema = new schema({
         type: { type: String },
         coordinates: []
     },
-    salon_franchise: {
-        type: Boolean,
-        required: true,
-    },
-    salon_franchise_list: [
-        {
-            type: String
-        }
-    ],
     salon_slots: {
         type: String,
         required: true,

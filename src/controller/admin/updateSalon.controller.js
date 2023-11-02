@@ -54,13 +54,11 @@ const updateSalon = async (req, res) => {
     salon_city: req.body.city,
     salon_state: req.body.state,
     salon_location: location,
-    salon_franchise: req.body.franchise,
     salon_slots: req.body.slots_number,
     salon_services: services,
     salon_combo_services: combo_services,
     salon_opening_time: req.body.opening_time,
     salon_closing_time: req.body.closing_time,
-    // salon_lunch_time: req.body.lunch_time,
     salon_lunch_start_time: req.body.lunch_start_time,
     salon_lunch_end_time: req.body.lunch_end_time,
     salon_features: features,
@@ -74,9 +72,6 @@ const updateSalon = async (req, res) => {
   };
   if(req.body.block_dates){
     updatedDetails.salon_block_dates = JSON.parse(req.body.block_dates)
-  }
-  if(req.body.franchise == "true"){
-    updatedDetails.salon_franchise_list = JSON.parse(req.body.franchise_salon)
   }
   // console.log(req.body.should_update_image);
   if (req.body.should_update_image == "true") {

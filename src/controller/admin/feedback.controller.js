@@ -1,8 +1,27 @@
 const FeedbackModel = require("../../models/client/feedback.model")
 const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant")
+const { v4: uuidv4 } = require('uuid');
+const moment = require('moment');
 
-// salon, user, rating
+const createFeedback = async (req) =>  {
+    const salonUuid = req.body.salon_uuid
+    const rating = req.body.rating
+    const message = req.body.message
+    const today = moment
+
+    const feedback = new FeedbackModel({
+        feedback_uuid: uuidv4(),
+        feedback_user_uuid: req.uuid,
+        feedback_salon_uuid: salonUuid,
+        feedback_rating: rating,
+        feedback_message: message,
+        feedback_date: today().format("DD/MM/YYYY")
+    })
+    const response = await feedback.save()
+    return successResponse(201, messages.success.SUCCESS, {response})
+}
+
 const getFeedback = async (req) => {
     let feedbacks;
     const salonUuid = req.query.salon_uuid
@@ -46,4 +65,4 @@ const deleteFeedback = async (req) => {
     }
 }
 
-module.exports = {getFeedback, deleteFeedback}
+module.exports = {getFeedback, deleteFeedback, createFeedback}

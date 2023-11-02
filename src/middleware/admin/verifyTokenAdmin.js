@@ -11,6 +11,7 @@ const verifytoken = (req, res, next) => {
             if (err) return res.send(errorResponse(401, messages.error.INVALID_JWT));
             req.email = payload.email;
             req.username = payload.username
+            req.uuid = payload.uuid
             next();
         });
     } catch (error) {

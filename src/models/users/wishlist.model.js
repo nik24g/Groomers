@@ -19,10 +19,6 @@ const wishlistSchema = new schema({
         type: String,
         required: true,
     },
-    wishlist_service_name: {
-        type: String,
-        required: true        
-    }
 }, { timestamps: true })
 
 // End of the modal

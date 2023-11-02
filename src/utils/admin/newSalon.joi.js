@@ -11,12 +11,6 @@ const salonSchema = Joi.object({
     city: Joi.string().required().min(3).max(20),
     state: Joi.string().required().min(3).max(20),
     location: Joi.string().pattern(/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/).required(),
-    franchise: Joi.boolean().required(),
-    franchise_salon: Joi.when('franchise', {
-        is: true,
-        then: Joi.array().items(Joi.string().length(36)).min(1).required(),
-        otherwise: Joi.forbidden(),
-    }),
     slots: Joi.number().integer().required(),
     services: Joi.array().items(Joi.object({
         name: Joi.string().required(),

@@ -13,7 +13,7 @@ const onBoardGenerateSlot = async (allSalonUuid) => {
         const lunchStart = moment(salon.salon_lunch_start_time, 'h:mm A');
         const lunchEnd = moment(salon.salon_lunch_end_time, 'h:mm A').subtract(1, 'minutes');
         // const lunchEnd = lunchStart.clone().add(29, 'minutes'); // Lunch break is fixed at 30 minutes
-        const slotDuration = 15; // Time slots duration in minutes
+        const slotDuration = 30; // Time slots duration in minutes
 
         // const timeSlots = [];
         const currentTime = openingTime.clone();
