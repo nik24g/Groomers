@@ -16,6 +16,17 @@ const generateDailySlots = async (req)=>{
     await SlotModel.updateMany({slot_date: today().subtract(1, "days").format("DD/MM/YYYY")}, {slot_isExpire: true, slot_isActive: false, slot_status: "expired"})
     const response = await generateSlotOnDaily(allUuid)
     return successResponse(201, response, {})
+
+    // await SlotModel.updateMany(
+    //     { slot_date: today.clone().subtract(1, "days").format("DD/MM/YYYY") },
+    //     { slot_isExpire: true, slot_isActive: false, slot_status: "expired" }
+    //   );
+    
+    // // Generating slots for the next day
+    // await generateSlotOnDaily(allUuid, today.clone().add(1, "days").format("DD/MM/YYYY"));
+    
+    // const response = "Slots for the next day generated and previous day slots expired.";
+    // return successResponse(201, response, {});
 }
 
 module.exports = generateDailySlots

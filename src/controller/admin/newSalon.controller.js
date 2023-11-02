@@ -3,7 +3,7 @@ const messages = require("../../utils/constant");
 const { successResponse, errorResponse } = require("../../utils/response");
 const { v4: uuidv4 } = require("uuid");
 
-// salon type shoud one of male, female, unisex
+// salon type should one of male, female, unisex
 const addNewSalon = async (req) => {
   const services = JSON.parse(req.body.service).map((service) => {
     // service = JSON.parse(service)

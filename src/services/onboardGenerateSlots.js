@@ -9,8 +9,6 @@ const onBoardGenerateSlot = async (salonUuid) => {
     if (!salon) throw "Salon not found"
     const today = moment
 
-
-
     // return timeSlots;
     for (let i = 0; i < 7; i++) {
         const openingTime = moment(salon.salon_opening_time, 'h:mm A');
@@ -33,7 +31,6 @@ const onBoardGenerateSlot = async (salonUuid) => {
                     slot_count: salon.salon_slots
                 }])
             }
-
             currentTime.add(slotDuration, 'minutes');
         }
     }
