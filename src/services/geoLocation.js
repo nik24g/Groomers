@@ -1,4 +1,6 @@
 const NodeGeocoder = require('node-geocoder');
+const googlemaps = require('googlemaps');
+// const googleMapsServices = require('google-maps-services');
 
 // Initialize the geocoder
 const geocoder = NodeGeocoder({
@@ -47,4 +49,28 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
-module.exports = {getCityFromCoordinates, calculateDistance}
+
+async function calculateDistanceByMaps(lat1, lon1, lat2, lon2) {
+  const client = new googleMapsServices.Client({
+    apiKey: 'AIzaSyCAQ_OT7vTNx2Io42BcX2Ee8wS0EacQrDU'
+  });
+  const origins = [lat1, lon1]
+  const destinations = [lat2, lon2]
+  // const request = {
+  //   origins,
+  //   destinations,
+  //   travelMode: 'driving',
+  //   trafficModel: 'best_guess'
+  // };
+  // const response = await client.distanceMatrix(request);
+  // Create a `google.maps.DistanceMatrixService` object.
+  const distanceMatrixService = new googlemaps.DistanceMatrixService();
+  const response = await distanceMatrixService.distanceMatrix({
+    origins,
+    destinations
+  });
+  const distance = response.rows[0].elements[0].distance;
+  return distance;
+}
+
+module.exports = {getCityFromCoordinates, calculateDistance, calculateDistanceByMaps}

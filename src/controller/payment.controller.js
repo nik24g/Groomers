@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const Buffer = require('buffer').Buffer;
 const { refund } = require("../services/refund")
 const RefundModel = require("../models/users/refund.model")
+const {sendConfirmationEmail} = require("../services/email.service")
 
 async function initiatePayment(price, appointmentId, userId) {
     // Define your payload, salt key, and salt index
@@ -28,8 +29,8 @@ async function initiatePayment(price, appointmentId, userId) {
         }
     };
     // console.log("payload:", payload);
-    const saltKey = '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
-    const saltIndex = '1';
+    const saltKey = process.env.PG_SALT_KEY;
+    const saltIndex = process.env.PG_SALT_INDEX;
 
     // Convert the payload to a JSON string and base64 encode it
     const payloadString = JSON.stringify(payload);
@@ -79,7 +80,8 @@ async function handleCallback(req, res) {
 
 
 const chechPaymentStatus = async (req, res) => {
-    const transactionId = req.params.transactionId
+    try {
+        const transactionId = req.params.transactionId
     let payment = await PaymentModel.findOne({ payment_merchant_transaction_id: transactionId })
     // now check with payment obj that is it updated after payment in callback url or not
     if (payment.payment_status == "initiated" || payment.payment_status == "pending") {
@@ -144,15 +146,16 @@ const chechPaymentStatus = async (req, res) => {
                 appointment.appointment_refund_amount = payment.payment_amount
                 appointment.appointment_payment_method = payment.payment_method
                 await appointment.save()
+                await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.APPOINTMENT_REJECTED, "<h2>Your appointment is rejected due to slot unavailability</h2>")
                 return res.status(409).json(successResponse(409, messages.success.REFUND_SLOT_ALREADY_BOOKED, {}))
             }
             // now all selected slots are available so we can update
             // updating appointment as for success booking
-            // checking is appointment is re-appointment or is this scheduled appointment or not if yes then update appointment in that way
+            // checking is appointment is re-appointment or is this rescheduled appointment or not if yes then update appointment in that way
             if(appointment.appointment_previous_appointment_uuid){
                 // it means it is re-appointment so we will update old appointment also 
                 const oldAppointment = await AppointmentModel.findOne({appointment_uuid: appointment.appointment_previous_appointment_uuid})
-                oldAppointment.appointment_status = "scheduled"
+                oldAppointment.appointment_status = "rescheduled"
                 oldAppointment.appointment_is_active = false
                 await oldAppointment.save()
                 // also we need to update old slot timings status like we need to add +1 in their slot_count
@@ -193,6 +196,7 @@ const chechPaymentStatus = async (req, res) => {
                     await slot.save()
                 }
             }
+            await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.APPOINTMENT_BOOKED, "<h2>Your appointment is Booked.</h2>")
             return res.status(202).json(successResponse(202, messages.success.APPOINTMENT_BOOKED, {}))
         }
         else if (response.code == "PAYMENT_PENDING") {
@@ -205,6 +209,7 @@ const chechPaymentStatus = async (req, res) => {
             // here payment is failed due to any reseason
             await PaymentModel.findOneAndUpdate({ payment_merchant_transaction_id: transactionId }, { payment_code: response.code, payment_status: "failed", payment_transaction_id: response.data.transactionId, payment_options: JSON.stringify(response) })
             await AppointmentModel.findByIdAndUpdate({ appointment_booking_id: transactionId }, { appointment_status: "rejected", appointment_payment_status: "failed" })
+            await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.PAYMENT_FAILED, "<h2>Your payment is failed due to any reason.</h2>")
             return res.status(402).json(errorResponse(402, messages.error.PAYMENT_FAILED, {}))
         }
     }
@@ -244,15 +249,16 @@ const chechPaymentStatus = async (req, res) => {
                 appointment.appointment_refund_amount = payment.payment_amount
                 appointment.appointment_payment_method = payment.payment_method
                 await appointment.save()
+                await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.APPOINTMENT_REJECTED, "<h2>Your appointment is rejected due to slot unavailability</h2>")
                 return res.status(409).json(successResponse(409, messages.success.REFUND_SLOT_ALREADY_BOOKED, {}))
             }
             // now all selected slots are available so we can update
             // updating appointment as for success booking
-            // checking is appointment is re-appointment or is this scheduled appointment or not if yes then update appointment in that way
+            // checking is appointment is re-appointment or is this rescheduled appointment or not if yes then update appointment in that way
             if(appointment.appointment_previous_appointment_uuid){
                 // it means it is re-appointment so we will update old appointment also 
                 const oldAppointment = await AppointmentModel.findOne({appointment_uuid: appointment.appointment_previous_appointment_uuid})
-                oldAppointment.appointment_status = "scheduled"
+                oldAppointment.appointment_status = "rescheduled"
                 oldAppointment.appointment_is_active = false
                 await oldAppointment.save()
                 // also we need to update old slot timings status like we need to add +1 in their slot_count
@@ -293,6 +299,7 @@ const chechPaymentStatus = async (req, res) => {
                     await slot.save()
                 }
             }
+            await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.APPOINTMENT_BOOKED, "<h2>Your appointment is Booked</h2>")
             return res.status(202).json(successResponse(202, messages.success.APPOINTMENT_BOOKED, {}))
 
         }
@@ -300,8 +307,13 @@ const chechPaymentStatus = async (req, res) => {
             // it means payment is failed due to any reason so now update appointment only as rejected
             // we are updating appointment only. not updating payment because it is updated already in callBackUrl api
             await AppointmentModel.findByIdAndUpdate({ appointment_booking_id: transactionId }, { appointment_status: "rejected", appointment_payment_status: "failed" })
+            await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.PAYMENT_FAILED, "<h2>Your Payment is failed due to any reason.</h2>")
             return res.status(402).json(errorResponse(402, messages.error.PAYMENT_FAILED, {}))
         }
+    }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(errorResponse(500, messages.error.WRONG, {}))
     }
 }
 

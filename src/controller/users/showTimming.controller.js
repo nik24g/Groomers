@@ -30,9 +30,9 @@ const showTimmings = async (req) => {
                 slot_date: moment().add(1, "days").format("DD/MM/YYYY"),
             }).select("-_id slot_uuid slot_time");
             const finalSlotArray = []
-            const consecutiveSlotNum = serviceDuration / 15
+            const consecutiveSlotNum = serviceDuration / 30
 
-            // here we are checking that service duration must be greater than 15 min 
+            // here we are checking that service duration must be greater than 30 min 
             if (consecutiveSlotNum >= 2) {
                 for (let i = 0; i < slots.length - 1; i++) {
                     // console.log(finalSlotArray);
@@ -46,8 +46,8 @@ const showTimmings = async (req) => {
                             const nextSlotTime = moment(nextSlot.slot_time, 'h:mm A')
                             const timeDiff = nextSlotTime.diff(slotTime, 'minutes')
                             // console.log(i, j, slotTime.format('h:mm A'), nextSlotTime.format('h:mm A'), timeDiff);
-                            // console.log(i, j, timeDiff, timeDiff > 15);
-                            if (timeDiff > 15) {
+                            // console.log(i, j, timeDiff, timeDiff > 30);
+                            if (timeDiff > 30) {
                                 // console.log("hello");
                                 flag = false
                             }
@@ -82,9 +82,9 @@ const showTimmings = async (req) => {
                 return slotTime.isAfter(oneHourFromNow);
             });
             const finalSlotArray = []
-            const consecutiveSlotNum = serviceDuration / 15
+            const consecutiveSlotNum = serviceDuration / 30
 
-            // here we are checking that service duration must be greater than 15 min 
+            // here we are checking that service duration must be greater than 30 min 
             if (consecutiveSlotNum >= 2) {
                 for (let i = 0; i < slots.length - 1; i++) {
                     // console.log(finalSlotArray);
@@ -98,8 +98,8 @@ const showTimmings = async (req) => {
                             const nextSlotTime = moment(nextSlot.slot_time, 'h:mm A')
                             const timeDiff = nextSlotTime.diff(slotTime, 'minutes')
                             // console.log(i, j, slotTime.format('h:mm A'), nextSlotTime.format('h:mm A'), timeDiff);
-                            // console.log(i, j, timeDiff, timeDiff > 15);
-                            if (timeDiff > 15) {
+                            // console.log(i, j, timeDiff, timeDiff > 30);
+                            if (timeDiff > 30) {
                                 // console.log("hello");
                                 flag = false
                             }
@@ -134,9 +134,9 @@ const showTimmings = async (req) => {
             slot_date: date,
         }).select("-_id slot_uuid slot_time");
         const finalSlotArray = []
-        const consecutiveSlotNum = serviceDuration / 15
+        const consecutiveSlotNum = serviceDuration / 30
 
-        // here we are checking that service duration must be greater than 15 min 
+        // here we are checking that service duration must be greater than 30 min 
         if (consecutiveSlotNum >= 2) {
             for (let i = 0; i < slots.length - 1; i++) {
                 // console.log(finalSlotArray);
@@ -150,8 +150,8 @@ const showTimmings = async (req) => {
                         const nextSlotTime = moment(nextSlot.slot_time, 'h:mm A')
                         const timeDiff = nextSlotTime.diff(slotTime, 'minutes')
                         // console.log(i, j, slotTime.format('h:mm A'), nextSlotTime.format('h:mm A'), timeDiff);
-                        // console.log(i, j, timeDiff, timeDiff > 15);
-                        if (timeDiff > 15) {
+                        // console.log(i, j, timeDiff, timeDiff > 30);
+                        if (timeDiff > 30) {
                             // console.log("hello");
                             flag = false
                         }

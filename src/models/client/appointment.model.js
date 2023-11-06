@@ -29,6 +29,9 @@ const appointmentSchema = new schema({
     appointment_user_phone: {
         type: String,
     },
+    appointment_user_email: {
+        type: String,
+    },
     appointment_slot_uuids: [
         {
             type: String,
@@ -120,6 +123,9 @@ const appointmentSchema = new schema({
     appointment_subtotal: {
         type: String,
         required: true
+    },
+    appointment_other_charges: {
+        type: String
     },
     appointment_is_reappointment: {
         type: Boolean,

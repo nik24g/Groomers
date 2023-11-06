@@ -1,7 +1,7 @@
 const SalonModel = require('../../models/client/salon.model')
 const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant")
-const { calculateDistance } = require("../../services/geoLocation")
+const { calculateDistance, calculateDistanceByMaps } = require("../../services/geoLocation")
 const FeedbackModel = require('../../models/client/feedback.model')
 
 const salonsByCity = async (req) => {
@@ -21,6 +21,7 @@ const salonsByCity = async (req) => {
   
       // Calculate distances for each salon
       const distance = calculateDistance(userLatitude, userLongitude, salonLatitude, salonLongitude);
+      const mapDistance = await calculateDistanceByMaps(userLatitude, userLongitude, salonLatitude, salonLongitude)
   
       // Fetch and calculate ratings for each salon
       const feedbacks = await FeedbackModel.find({ feedback_salon_uuid: salons[i].salon_uuid });
@@ -34,6 +35,7 @@ const salonsByCity = async (req) => {
       const salonWithRatingsAndDistance = {
         ...salons[i].toObject(),
         distance: distance,
+        mapDistance: mapDistance,
         rating: rating,
       };
       salonsWithRatingsAndDistance.push(salonWithRatingsAndDistance);

@@ -13,6 +13,7 @@ const RefundModel = require("../../models/users/refund.model")
 const { refund } = require("../../services/refund")
 const {increaseSlotsCount} = require("../../services/updateSlot")
 const {sendConfirmationEmail} = require("../../services/email.service")
+const {bookingId} = require("../../services/id")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
 // if payment fails then we will not subtract count but if payment success then we will subtract it.
@@ -32,7 +33,8 @@ const newAppointment = async (req) => {
     const isGuestAppointment = req.body.is_guest_appointment || false
     const guestFullName = req.body.full_name
     const guestMobile = req.body.mobile
-    const appointmentBookingId = uuidv4()
+    const guestEmail = req.body.email
+    const appointmentBookingId = await bookingId()
 
     const salon = await SalonModel.findOne({ salon_uuid: receivedSalonUuid })
     // getting services or combos that user selected 
@@ -73,6 +75,7 @@ const newAppointment = async (req) => {
         appointment_date: date,
         appointment_user_phone: guestMobile || req.mobile,
         appointment_user_full_name: guestFullName || req.fullName,
+        appointment_user_email: guestEmail || req.email,
         appointment_status: "pending",
         appointment_original_price: totalOriginalPrice,
         appointment_discounted_price: totalDiscountedPrice,
@@ -93,6 +96,7 @@ const newAppointment = async (req) => {
         payment_status: "initiated",
         payment_code: payment.code
     })
+    // console.log(payment);
     await newPayment.save()
     return successResponse(201, messages.success.APPOINTMENT_INITIATED, { order: payment })
 }
@@ -140,7 +144,7 @@ const cancelAppointment = async (req) => {
     await appointment.save()
     // after initiating refund we need to update slot availability because of appointment cancellation one slot is now available for other users
     await increaseSlotsCount(appointment.appointment_slot_uuids)
-    await sendConfirmationEmail(req.email, messages.subject.APPOINTMENT_CANCEL, "<h1>your appointment is now cancelled</h1>")
+    await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.APPOINTMENT_CANCEL, "<h1>your appointment is now cancelled</h1>")
     return successResponse(200, messages.success.APPOINTMENT_CANCEL, {})
 }
 
@@ -150,7 +154,7 @@ const reScheduleAppointment = async (req) => {
     const slotUuids = req.slotUuids
     const timing = req.body.timing
     const date = req.body.date
-    const appointmentBookingId = uuidv4()
+    const appointmentBookingId = await bookingId()
 
     const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
 

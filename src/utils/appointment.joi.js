@@ -11,7 +11,7 @@ function validateTime(time) {
 const validation = Joi.object({
   salon_uuid: Joi.string().length(36).required(),
   slot_uuid: Joi.string().length(36).required(),
-  duration: Joi.number().min(15).required(),
+  duration: Joi.number().min(30).required(),
   timing: Joi.string().custom(validateTime).required(),
   date: Joi.string().pattern(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/).required(), // DD/MM/YYYY format
   services: Joi.array().items(Joi.string().min(2)),
