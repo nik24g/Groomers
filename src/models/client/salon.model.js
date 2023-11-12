@@ -178,6 +178,10 @@ const salonSchema = new schema({
     salon_isActive: {
         type: Boolean,
         default: true
+    },
+    salon_is_recommended: {
+        type: Boolean,
+        default: false
     }
 },
     { timestamps: true }

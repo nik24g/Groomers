@@ -29,7 +29,9 @@ const success = {
     SALON_ENABLE: "Salon is now enabled.",
     SALON_DISABLE: "Salon is now disabled.",
     APPOINTMENT_INITIATED: "Your appointment for selected slot is initiated. Now please complete payment for booking.",
-    RESCHEDULE_APPOINTMENT_INITIATED: "Your reschedule appointment for selected slot is initiated. Now please complete payment for booking."
+    RESCHEDULE_APPOINTMENT_INITIATED: "Your reschedule appointment for selected slot is initiated. Now please complete payment for booking.",
+    SALON_RECOMMENDED: "Salon is added for recommendation",
+    SALON_NOT_RECOMMENDED: "Salon is removed from recommendation"
 }
 const error = {
     WRONG: "Something went wrong..",

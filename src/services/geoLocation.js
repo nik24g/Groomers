@@ -1,6 +1,7 @@
-const NodeGeocoder = require('node-geocoder');
-const googlemaps = require('googlemaps');
-// const googleMapsServices = require('google-maps-services');
+const NodeGeocoder = require("node-geocoder");
+
+const { Client } = require('@googlemaps/google-maps-services-js');
+const googleMapsClient = new Client();
 
 // Initialize the geocoder
 const geocoder = NodeGeocoder({
@@ -50,27 +51,55 @@ function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
 
-async function calculateDistanceByMaps(lat1, lon1, lat2, lon2) {
-  const client = new googleMapsServices.Client({
-    apiKey: 'AIzaSyCAQ_OT7vTNx2Io42BcX2Ee8wS0EacQrDU'
-  });
-  const origins = [lat1, lon1]
-  const destinations = [lat2, lon2]
-  // const request = {
-  //   origins,
-  //   destinations,
-  //   travelMode: 'driving',
-  //   trafficModel: 'best_guess'
-  // };
-  // const response = await client.distanceMatrix(request);
-  // Create a `google.maps.DistanceMatrixService` object.
-  const distanceMatrixService = new googlemaps.DistanceMatrixService();
-  const response = await distanceMatrixService.distanceMatrix({
-    origins,
-    destinations
-  });
-  const distance = response.rows[0].elements[0].distance;
-  return distance;
-}
+// async function calculateDistanceByMaps(lat1, lon1, lat2, lon2) {
+//   const client = new googleMapsServices.Client({
+//     apiKey: 'AIzaSyCAQ_OT7vTNx2Io42BcX2Ee8wS0EacQrDU'
+//   });
+//   const origins = [lat1, lon1]
+//   const destinations = [lat2, lon2]
+//   // const request = {
+//   //   origins,
+//   //   destinations,
+//   //   travelMode: 'driving',
+//   //   trafficModel: 'best_guess'
+//   // };
+//   // const response = await client.distanceMatrix(request);
+//   // Create a `google.maps.DistanceMatrixService` object.
+//   const distanceMatrixService = new googlemaps.DistanceMatrixService();
+//   const response = await distanceMatrixService.distanceMatrix({
+//     origins,
+//     destinations
+//   });
+//   const distance = response.rows[0].elements[0].distance;
+//   return distance;
+// }
 
-module.exports = {getCityFromCoordinates, calculateDistance, calculateDistanceByMaps}
+
+const calculateDistanceByMap = async (lat1, lon1, lat2, lon2) => {
+  try {
+    const origin = [lat1, lon1]
+    const destination = [lat2, lon2]
+    const response = await googleMapsClient.directions({
+      params: {
+        origin: origin,
+        destination: destination,
+        mode: 'driving',
+        key: 'AIzaSyBnOkm-iUvpnbqvWWcDfhu0SRaRVC4BFz8',
+      },
+    });
+
+    const route = response.data.routes[0];  
+    if (route) {
+      const distance = route.legs.reduce((total, leg) => total + leg.distance.value, 0);
+      const miles = distance * 0.000621371;
+      const kilometers = distance / 1000;
+
+      return { miles, kilometers };
+    } else {
+      return { miles: 0, kilometers: 0 };
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+module.exports = {getCityFromCoordinates, calculateDistance, calculateDistanceByMap}

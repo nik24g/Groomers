@@ -76,11 +76,11 @@ router.post("/login/verification", loginJoiValidator, async (req, res) => {
     }
 });
 
-// route for getting all salon in the city with authentication (deprecated)
-router.get("/auth-salons", tokenAuthentication, async (req, res) => {
+// route for getting all recommended salons of the city
+router.get("/recommended-salons", tokenAuthentication, async (req, res) => {
     try {
-        const city = req.query.city
-        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
+        const city = req.query.city || process.env.DEFAULT_CITY
+        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true, salon_is_recommended: true }).select("-_id -__v -salon_username -salon_password -salon_owner_pancard_number -salon_bank_name -salon_bank_account_number -salon_bank_IFSC_code -createdAt -updatedAt");
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
@@ -115,7 +115,7 @@ router.get("/search/salon", async (req, res) => {
     try {
         const salonName = req.query.name
         const salons = await SalonModel.find({ "salon_name": { "$regex": salonName, "$options": "i" }, salon_isActive: true }).select("-_id salon_name salon_address salon_city salon_state salon_languages salon_features salon_photos")
-        return res.send(successResponse(201, messages.success.SUCCESS, salons))
+        return res.status(200).json(successResponse(200, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
         return res.status(500).json(errorResponse(500, messages.error.WRONG));

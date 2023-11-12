@@ -13,6 +13,7 @@ const {sendConfirmationEmail} = require("../services/email.service")
 
 async function initiatePayment(price, appointmentId, userId) {
     // Define your payload, salt key, and salt index
+    // http://localhost:3000/salon/payment/{id}/true/{Verfication_Token}
     const redirectUrl = "https://nitingoswamiportfolio.netlify.app"
     const callbackUrl = "https://www.groomer.live/payment/phonepe-callback"
     const payload = {
