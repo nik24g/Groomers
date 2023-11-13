@@ -50,6 +50,8 @@ const addNewSalon = async (req) => {
     salon_password: req.body.password,
     salon_code: req.body.code,
     salon_name: req.body.name,
+    salon_email: req.body.email,
+    salon_description: req.body.description,
     salon_type: req.body.type,
     salon_address: req.body.address,
     salon_area: req.body.area,

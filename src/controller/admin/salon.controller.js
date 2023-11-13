@@ -65,4 +65,10 @@ const toggleSalonRecommend = async (req, res) => {
         return errorResponse(404, messages.error.NOT_FOUND, {})
     }
 }
-module.exports = {deleteSalonBySalonId, toggleSalon, salonCode, toggleSalonRecommend}
+
+const recommendedSalonsCode = async (req, res) => {
+    const city = req.query.city || process.env.DEFAULT_CITY
+    const salons = await SalonModel.find({salon_city: city, salon_is_recommended: true}).select("-_id salon_code salon_uuid")
+    return successResponse(200, messages.success.SUCCESS, salons)
+}
+module.exports = {deleteSalonBySalonId, toggleSalon, salonCode, toggleSalonRecommend, recommendedSalonsCode}

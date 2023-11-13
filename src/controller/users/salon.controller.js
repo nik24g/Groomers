@@ -3,6 +3,8 @@ const { successResponse, errorResponse } = require("../../utils/response");
 const messages = require("../../utils/constant")
 const { calculateDistance, calculateDistanceByMap } = require("../../services/geoLocation")
 const FeedbackModel = require('../../models/client/feedback.model')
+const WishListModel = require('../../models/users/wishlist.model')
+const AppointmentModel = require("../../models/client/appointment.model")
 
 const salonsByCity = async (req) => {
     const city = req.query.city;
@@ -49,9 +51,25 @@ const salonsByCity = async (req) => {
 
 const salonByUuid = async (req) => {
     const salonUuid = req.query.uuid
+    const userUuid = req.query.userUuid
+    let isWishlisted = false
     if(!salonUuid) return errorResponse(400, messages.error.UUID_REQUIRED, {})
     const salon = await SalonModel.findOne({salon_uuid: salonUuid}).select("-_id -__v -salon_username -salon_password -salon_owner_pancard_number -salon_bank_name -salon_bank_account_number -salon_bank_IFSC_code -createdAt -updatedAt")
     if(!salon) return errorResponse(404, messages.error.NOT_FOUND, {})
-    return successResponse(200, messages.success.SUCCESS, {salon: salon})
+
+    // now we will check is this salon is added in users wishlist or not
+    const wishlist = await WishListModel.findOne({wishlist_salon_uuid: salonUuid, wishlist_user_uuid: userUuid})
+    if(wishlist){
+      isWishlisted = true
+    }
+
+    // now we will check if user able to give rating to the salon or not
+    let ableToRating = false
+    const appointmentsCount = await AppointmentModel.countDocuments({appointment_user_uuid: userUuid, appointment_salon_uuid: salonUuid, appointment_status: "completed"})
+    const existingFeedbacksCount = await FeedbackModel.countDocuments({feedback_user_uuid: userUuid, feedback_salon_uuid: salonUuid})
+    if(appointmentsCount > existingFeedbacksCount){
+        ableToRating = true
+    }
+    return successResponse(200, messages.success.SUCCESS, {salon: salon, isWishlisted: isWishlisted, ableToRating: ableToRating})
 }
 module.exports = { salonsByCity, salonByUuid }

@@ -22,6 +22,7 @@ const {newAppointment, cancelAppointment, reScheduleAppointment, appointments} =
 const appointmentValidator = require("../middleware/users/appointment.validation")
 const rescheduleValidator = require("../middleware/users/reschedule.validation")
 const {salonsByCity, salonByUuid} = require("../controller/users/salon.controller")
+const {user} = require("../controller/users/user.controller.js")
 
 // router for user or customer registration
 router.post("/registration", registrationValidator, async (req, res) => {
@@ -65,10 +66,10 @@ router.post("/login/generateOtp", generateOtpValidator, async (req, res) => {
     }
 })
 // login verification through email and otp
-router.post("/login/verification", loginJoiValidator, async (req, res) => {
+router.get("/details", tokenAuthentication, async (req, res) => {
     let response;
     try {
-        response = await loginUser(req, res);
+        response = await user(req);
         return res.status(response.code).json(response);
     } catch (error) {
         console.log(error);
@@ -80,7 +81,7 @@ router.post("/login/verification", loginJoiValidator, async (req, res) => {
 router.get("/recommended-salons", tokenAuthentication, async (req, res) => {
     try {
         const city = req.query.city || process.env.DEFAULT_CITY
-        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true, salon_is_recommended: true }).select("-_id -__v -salon_username -salon_password -salon_owner_pancard_number -salon_bank_name -salon_bank_account_number -salon_bank_IFSC_code -createdAt -updatedAt");
+        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true, salon_is_recommended: true }).select("-_id salon_uuid salon_code salon_name salon_description salon_address")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);

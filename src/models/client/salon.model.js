@@ -28,6 +28,13 @@ const salonSchema = new schema({
         type: String,
         required: true,
     },
+    salon_email: {
+        type: String,
+        required: true,
+    },
+    salon_description: {
+        type: String
+    },
     salon_type: {
         type: String,
         required: true

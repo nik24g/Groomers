@@ -5,6 +5,8 @@ const salonSchema = Joi.object({
     password: Joi.string().min(5).max(15).required(),
     code: Joi.string().alphanum().required(),
     name: Joi.string().required(),
+    description: Joi.string(),
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'in'] } }).trim(true).required(),
     type: Joi.string().valid('male', 'female', 'unisex').required(),
     address: Joi.string().min(10).required(),
     area: Joi.string().min(3).required(),
