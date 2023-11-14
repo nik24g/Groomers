@@ -55,6 +55,18 @@ router.post("/registration/verification", verifyOtp, async (req, res) => {
     }
 })
 
+// login verification through email and otp
+router.post("/login/verification", loginJoiValidator, async (req, res) => {
+    let response;
+    try {
+        response = await loginUser(req, res);
+        return res.status(response.code).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(errorResponse(500, messages.error.WRONG));
+    }
+});
+
 //otp generation for login and sending to email id
 router.post("/login/generateOtp", generateOtpValidator, async (req, res) => {
     let response;
