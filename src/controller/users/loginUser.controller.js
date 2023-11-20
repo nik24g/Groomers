@@ -16,7 +16,7 @@ const userLogin = async (req) => {
     if (otpData.otp_expireAt < Date.now()) {
         return successResponse(400, messages.success.OTP_EXPIRED, {})
     } 
-    else { 
+    else {
         // if not expired then check whether the otp is same or not 
         if (otpData.otp_count < 3) {
             if (enteredOtp == otpData.otp_number) { 

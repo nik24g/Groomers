@@ -41,7 +41,7 @@ const updateSalon = async (req, res) => {
     };
     return combo;
   });
-  const location = { type: "Point", coordinates: req.body.location.split(",") };
+  const location = { type: "Point", coordinates: [Number(req.body.location.split(",")[0]), Number(req.body.location.split(",")[1])] };
 
   const updatedDetails = {
     salon_username: req.body.username,

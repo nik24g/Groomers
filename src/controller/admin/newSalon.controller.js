@@ -41,7 +41,7 @@ const addNewSalon = async (req) => {
     };
     return combo;
   });
-  const location = { type: "Point", coordinates: req.body.location.split(",") };
+  const location = { type: "Point", coordinates: [Number(req.body.location.split(",")[0]), Number(req.body.location.split(",")[1])] };
   const photosPath = req.files.map((file) => file.path);
 
   const salon = new SalonModel({

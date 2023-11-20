@@ -12,7 +12,8 @@ const feedbackSchema = new schema({
     },
     feedback_user_uuid: {
         type: String,
-        required: true
+        required: true,
+        ref: 'user'
     },
     feedback_salon_uuid: {
         type: String,

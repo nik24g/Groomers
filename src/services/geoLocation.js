@@ -84,7 +84,7 @@ const calculateDistanceByMap = async (lat1, lon1, lat2, lon2) => {
         origin: origin,
         destination: destination,
         mode: 'driving',
-        key: 'AIzaSyBnOkm-iUvpnbqvWWcDfhu0SRaRVC4BFz8',
+        key: process.env.GOOGLE_MAP_API_KEY,
       },
     });
 

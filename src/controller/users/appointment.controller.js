@@ -11,9 +11,9 @@ const moment = require("moment");
 const { initiatePayment } = require("../payment.controller")
 const RefundModel = require("../../models/users/refund.model")
 const { refund } = require("../../services/refund")
-const {increaseSlotsCount} = require("../../services/updateSlot")
-const {sendConfirmationEmail} = require("../../services/email.service")
-const {bookingId} = require("../../services/id")
+const { increaseSlotsCount } = require("../../services/updateSlot")
+const { sendConfirmationEmail } = require("../../services/email.service")
+const { bookingId } = require("../../services/id")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
 // if payment fails then we will not subtract count but if payment success then we will subtract it.
@@ -196,7 +196,7 @@ const reScheduleAppointment = async (req) => {
         appointment_status: "pending",
         appointment_previous_payment: appointment.appointment_previous_payment,
         appointment_subtotal: appointment.appointment_subtotal,
-        appointment_other_charges: JSON.stringify({"rescheduleCharge": rescheduleCharge}),
+        appointment_other_charges: JSON.stringify({ "rescheduleCharge": rescheduleCharge }),
         appointment_payment_status: "pending"
     })
     await newAppointment.save()
@@ -219,42 +219,101 @@ const reScheduleAppointment = async (req) => {
 
 const appointments = async (req) => {
     const { status, startDate, endDate, page = 1, limit = 10 } = req.query;
-    const filter = {
-        appointment_user_uuid: req.uuid
+
+    // Initial match stage with the user's UUID
+    const matchStage = {
+        $match: {
+            appointment_user_uuid: req.uuid
+        }
+    };
+
+    // Additional match stages based on filters
+    if (status) {
+        matchStage.$match.appointment_status = status;
     }
-    // adding status filter 
-    if (status){
-        filter.appointment_status = status
-    }
-    // adding date range filter 
+
     if (startDate && endDate) {
-        // Parse the date input if needed, assuming it's already in "DD/MM/YYYY" format
         const parsedStartDate = startDate;
         const parsedEndDate = endDate;
 
-        filter.appointment_date = {
+        matchStage.$match.appointment_date = {
             $gte: parsedStartDate,
             $lte: parsedEndDate,
         };
     }
-    // Count total appointments
-    const totalAppointments = await AppointmentModel.countDocuments(filter);
 
-    const options = {
-        skip: (page - 1) * limit,
-        limit: parseInt(limit),
-        select: {
-            _id: 0,
-            __v: 0,
-            createdAt: 0,
-            updatedAt: 0,
-            appointment_is_reappointment: 0,
+    // Aggregation pipeline with $lookup stage
+    const pipeline = [
+        matchStage,
+        {
+            $sort: { createdAt: -1 }
         },
-        sort: { createdAt: -1 }
-    };
+        {
+            $skip: (page - 1) * limit
+        },
+        {
+            $limit: parseInt(limit)
+        },
+        {
+            $lookup: {
+                from: 'salons', // Replace with the actual collection name
+                localField: 'appointment_salon_uuid',
+                foreignField: 'salon_uuid',
+                as: 'salon'
+            }
+        },
+        {
+            $unwind: '$salon'
+        },
+        {
+            $project: {
+                _id: 0,
+                __v: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                'salon._id': 0,
+                'salon.__v': 0,
+                'salon.createdAt': 0,
+                'salon.updatedAt': 0,
+                'salon.salon_password': 0,
+                'salon.salon_description': 0,
+                'salon.salon_email': 0,
+                'salon.salon_type': 0,
+                'salon.salon_address': 0,
+                'salon.salon_area': 0,
+                'salon.salon_state': 0,
+                'salon.salon_slots': 0,
+                'salon.salon_services': 0,
+                'salon.salon_combo_services': 0,
+                'salon.salon_opening_time': 0,
+                'salon.salon_closing_time': 0,
+                'salon.salon_lunch_start_time': 0,
+                'salon.salon_lunch_end_time': 0,
+                'salon.salon_photos': 0,
+                'salon.salon_features': 0,
+                'salon.salon_languages': 0,
+                'salon.salon_owner_name': 0,
+                'salon.salon_owner_mobile': 0,
+                'salon.salon_owner_pancard_number': 0,
+                'salon.salon_bank_name': 0,
+                'salon.salon_bank_account_number': 0,
+                'salon.salon_bank_IFSC_code': 0,
+                'salon.salon_block_dates': 0,
+                'salon.salon_isActive': 0,
+                'salon.salon_is_recommended': 0
+            }
+        }
+        
+    ];
 
-    const appointments = await AppointmentModel.find(filter, null, options);
-    return successResponse(200, messages.success.SUCCESS, { appointments, totalAppointments})
-    
-}
+    // Execute aggregation pipeline
+    const [appointments, totalAppointments] = await Promise.all([
+        AppointmentModel.aggregate(pipeline),
+        AppointmentModel.countDocuments(matchStage.$match)
+    ]);
+
+    // Return success response with the appointments and total count
+    return successResponse(200, messages.success.SUCCESS, { appointments, totalAppointments });
+};
+
 module.exports = { newAppointment, cancelAppointment, reScheduleAppointment, appointments }

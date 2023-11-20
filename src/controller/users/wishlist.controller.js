@@ -21,7 +21,26 @@ const createWishList = async (req) => {
 }
 
 const getWishList = async (req) => {
-    const wishlists = await WishlistModel.find({wishlist_user_uuid: req.uuid}).select("-_id wishlist_uuid wishlist_salon_uuid")
+    // const wishlists = await WishlistModel.find({wishlist_user_uuid: req.uuid}).select("-_id wishlist_uuid wishlist_salon_uuid")
+    const wishlists = await WishlistModel.aggregate([
+        { $match: { wishlist_user_uuid: req.uuid } },
+        {
+            $lookup: {
+                from: 'salons',
+                localField: 'wishlist_salon_uuid',
+                foreignField: 'salon_uuid',
+                as: 'salon'
+            }
+        },
+        {
+            $project: {
+                _id: 0,  // Exclude the default _id field
+                wishlist_uuid: 1,
+                wishlist_salon_uuid: 1,
+                salon_name: { $arrayElemAt: ['$salon.salon_name', 0] }
+            }
+        }
+    ])
     return successResponse(200, messages.success.SUCCESS, wishlists)
 }
 

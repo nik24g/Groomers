@@ -93,7 +93,7 @@ router.get("/details", tokenAuthentication, async (req, res) => {
 router.get("/recommended-salons", tokenAuthentication, async (req, res) => {
     try {
         const city = req.query.city || process.env.DEFAULT_CITY
-        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true, salon_is_recommended: true }).select("-_id salon_uuid salon_code salon_name salon_description salon_address")
+        const salons = await SalonModel.find({ salon_city: city, salon_isActive: true, salon_is_recommended: true }).select("-_id salon_uuid salon_code salon_name salon_description salon_address salon_photos")
         return res.send(successResponse(201, messages.success.SUCCESS, salons))
     } catch (error) {
         console.log(error);
@@ -235,7 +235,7 @@ router.post("/feedback/create", tokenAuthentication, async (req, res) => {
     }
 })
 
-router.get("/feedback/getFeedback", tokenAuthentication, async (req, res) => {
+router.get("/feedback/getFeedback", async (req, res) => {
     let response;
     try {
         response = await getFeedback(req)

@@ -68,7 +68,8 @@ const error = {
     UUID_REQUIRED: "Uuid is required to send.",
     SLOT_FULLY_BOOKED: "The slot you want to toggle is fully booked by the customers so you can not disable or enable the slot.",
     ALREADY_IN_WISHLIST: "This salon already found in this users wishlist",
-    CAN_NOT_GIVE_FEEDBACK: "You are unable to give feedback. Take service first in the salon."
+    CAN_NOT_GIVE_FEEDBACK: "You are unable to give feedback. Take service first in the salon.",
+    SALON_UUID_REQUIRED: "Salon uuid is required to send."
 }
 
 const subject = {
