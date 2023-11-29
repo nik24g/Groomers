@@ -50,3 +50,4 @@ const salonSchema = Joi.object({
 });
 
 module.exports = salonSchema;
+//developed by Nitin Goswami

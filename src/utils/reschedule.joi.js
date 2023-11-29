@@ -33,3 +33,4 @@ const validation = Joi.object({
   .custom(calculateSlotUuidsLength); // Apply custom validation
 
 module.exports = validation;
+//developed by Nitin Goswami

@@ -24,3 +24,4 @@ const wishlistSchema = new schema({
 // End of the modal
 
 module.exports = mongoose.model("Wishlist", wishlistSchema, "wishlists");
+//developed by Nitin Goswami

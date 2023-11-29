@@ -194,3 +194,4 @@ const salonSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("salon", salonSchema, "salons");
+//developed by Nitin Goswami

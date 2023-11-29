@@ -72,3 +72,4 @@ const recommendedSalonsCode = async (req, res) => {
     return successResponse(200, messages.success.SUCCESS, salons)
 }
 module.exports = {deleteSalonBySalonId, toggleSalon, salonCode, toggleSalonRecommend, recommendedSalonsCode}
+//developed by Nitin Goswami

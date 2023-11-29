@@ -2,8 +2,8 @@ const Razorpay = require('razorpay');
 const { validateWebhookSignature } = require('razorpay/dist/utils/razorpay-utils')
 
 const razorpay = new Razorpay({
-  key_id: 'rzp_test_3NvS1A0AXxl3iE',
-  key_secret: 'IwgWYQlKuda9SgiQim7VwWa2',
+  key_id: '',
+  key_secret: '',
 });
 
 const createOrder = async (amount, orderId) => {
@@ -31,3 +31,4 @@ const verifySignature = (payload, signature) => {
 };
 
 module.exports = { createOrder, verifySignature, razorpay };
+//developed by Nitin Goswami

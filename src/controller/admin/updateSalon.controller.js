@@ -89,4 +89,4 @@ const updateSalon = async (req, res) => {
 };
 
 module.exports = updateSalon;
-
+//developed by Nitin Goswami

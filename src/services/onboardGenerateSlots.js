@@ -39,3 +39,4 @@ const onBoardGenerateSlot = async (salonUuid) => {
 }
 
 module.exports = onBoardGenerateSlot
+//developed by Nitin Goswami

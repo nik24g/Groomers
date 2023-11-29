@@ -35,3 +35,4 @@ const feedbackSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("feedback", feedbackSchema, "feedbacks");
+//developed by Nitin Goswami

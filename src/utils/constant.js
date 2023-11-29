@@ -31,7 +31,9 @@ const success = {
     APPOINTMENT_INITIATED: "Your appointment for selected slot is initiated. Now please complete payment for booking.",
     RESCHEDULE_APPOINTMENT_INITIATED: "Your reschedule appointment for selected slot is initiated. Now please complete payment for booking.",
     SALON_RECOMMENDED: "Salon is added for recommendation",
-    SALON_NOT_RECOMMENDED: "Salon is removed from recommendation"
+    SALON_NOT_RECOMMENDED: "Salon is removed from recommendation",
+    SALON_CLOSE: "Salon is Closed for today",
+    SALON_OPEN: "Salon is Opened for today",
 }
 const error = {
     WRONG: "Something went wrong..",
@@ -69,7 +71,8 @@ const error = {
     SLOT_FULLY_BOOKED: "The slot you want to toggle is fully booked by the customers so you can not disable or enable the slot.",
     ALREADY_IN_WISHLIST: "This salon already found in this users wishlist",
     CAN_NOT_GIVE_FEEDBACK: "You are unable to give feedback. Take service first in the salon.",
-    SALON_UUID_REQUIRED: "Salon uuid is required to send."
+    SALON_UUID_REQUIRED: "Salon uuid is required to send.",
+    CAN_NOT_CLOSE_SALON: "Salon cannot be marked as holiday because there are booked appointments for today."
 }
 
 const subject = {
@@ -80,3 +83,5 @@ const subject = {
 
 }
 module.exports = { success, error, subject};
+
+//developed by Nitin Goswami

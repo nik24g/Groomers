@@ -7,3 +7,4 @@ const user = async (req) => {
     return successResponse(200, messages.success.SUCCESS, user)
 }
 module.exports = {user}
+//developed by Nitin Goswami

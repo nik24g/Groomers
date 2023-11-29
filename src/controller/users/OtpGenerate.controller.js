@@ -16,3 +16,4 @@ const otpGenerate = async (req, res) => {
 }
 
 module.exports = otpGenerate   
+//developed by Nitin Goswami

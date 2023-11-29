@@ -270,3 +270,6 @@ router.post("/contactUs", async (req, res) => {
 })
 
 module.exports = router;
+//developed by Nitin Goswami
+// I know there are a lot of things those are not configured correctly but i had very less time to develop this.
+// nitingoswami1900@gmail.com

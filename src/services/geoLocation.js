@@ -103,3 +103,4 @@ const calculateDistanceByMap = async (lat1, lon1, lat2, lon2) => {
   }
 };
 module.exports = {getCityFromCoordinates, calculateDistance, calculateDistanceByMap}
+//developed by Nitin Goswami

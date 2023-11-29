@@ -184,6 +184,7 @@ const reScheduleAppointment = async (req) => {
         appointment_booking_id: appointmentBookingId,
         appointment_is_guest: appointment.appointment_is_guest,
         appointment_user_uuid: appointment.appointment_user_uuid,
+        appointment_user_email: appointment.appointment_user_email,
         appointment_salon_uuid: appointment.appointment_salon_uuid,
         appointment_slot_uuids: slotUuids,
         appointment_duration: appointment.appointment_duration,

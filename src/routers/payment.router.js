@@ -17,3 +17,6 @@ router.get('/payment-status/:transactionId', tokenAuthentication, paymentControl
 router.post('/phonepe-refund-callback', paymentController.refundCallBack);
 
 module.exports = router;
+//developed by Nitin Goswami
+// Hope so this payment gateway working fine :)
+// nitingoswami1900@gmail.com

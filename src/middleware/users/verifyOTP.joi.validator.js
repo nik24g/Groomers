@@ -15,3 +15,4 @@ const verifyOtp = async (req, res, next) => {
 	}
 };
 module.exports = verifyOtp;
+//developed by Nitin Goswami

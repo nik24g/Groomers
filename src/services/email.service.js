@@ -31,3 +31,4 @@ const sendConfirmationEmail = async (toEmail, subject, htmlContent) => {
 };
 
 module.exports = { sendConfirmationEmail };
+//developed by Nitin Goswami

@@ -14,3 +14,4 @@ const generateSlot = async (req)=>{
 }
 
 module.exports = generateSlot
+//developed by Nitin Goswami

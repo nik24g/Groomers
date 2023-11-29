@@ -14,3 +14,4 @@ const otpGenerateValidation = async (req, res, next) => {
 	}
 };
 module.exports = otpGenerateValidation;
+//developed by Nitin Goswami

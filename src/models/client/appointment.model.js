@@ -147,3 +147,4 @@ const appointmentSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("appointment", appointmentSchema, "appointments");
+//developed by Nitin Goswami

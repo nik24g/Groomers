@@ -25,3 +25,4 @@ const homeSchema = new schema({
 // End of the modal
 
 module.exports = mongoose.model("home", homeSchema, "homes");
+//developed by Nitin Goswami

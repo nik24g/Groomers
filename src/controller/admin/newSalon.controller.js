@@ -80,3 +80,4 @@ const addNewSalon = async (req) => {
 };
 
 module.exports = addNewSalon;
+//developed by Nitin Goswami

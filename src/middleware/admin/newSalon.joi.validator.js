@@ -70,3 +70,4 @@ const newSalonValidation = async (req, res, next) => {
 	}
 };
 module.exports = newSalonValidation;
+//developed by Nitin Goswami

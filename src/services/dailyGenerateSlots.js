@@ -37,3 +37,4 @@ const onBoardGenerateSlot = async (allSalonUuid) => {
 };
 
 module.exports = onBoardGenerateSlot;
+//developed by Nitin Goswami
