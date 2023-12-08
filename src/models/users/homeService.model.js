@@ -1,26 +1,51 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const schema = mongoose.Schema;
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
-
-// Login home Schema
-const homeSchema = new schema({
+// home Schema
+const homeSchema = new schema(
+  {
     home_uuid: {
-        type: String,
-        required: true,
-        unique: true,
-        default: uuidv4()
+      type: String,
+      required: true,
+      unique: true,
+      default: uuidv4,
     },
-    home_email: {
-        type: String,
-        required: true,
+    targetGender: {
+      type: String,
+      required: true,
+      enum: ["men", "women", "both", "kids", "all"],
     },
-    home_mobile: {
-        type: String,
-        required: true,
-    }
-   
-},{ timestamps: true })
+    selectedServices: {
+      type: [String],
+      required: true,
+    },
+    appointmentDate: {
+      type: String,
+      required: true,
+    },
+    appointmentTime: {
+      type: String,
+      required: true,
+    },
+    fullName: {
+      type: String,
+      required: true,
+    },
+    mobileNumber: {
+      type: String,
+      required: true,
+    },
+    fullAddress: {
+      type: String,
+      required: true,
+    },
+    suggestions: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
 // End of the modal
 
