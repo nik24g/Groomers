@@ -19,7 +19,6 @@ const homeService = async (req) => {
     await sendConfirmationEmail(
       req.email,
       messages.subject.APPOINTMENT_BOOKED,
-      // "<h1>your appointment is booked</h1>"
       `Hi ${req.body.fullName} your appointment is successfully booked for ${req.body.appointmentTime} on ${req.body.appointmentDate} . Thank You !`
     );
     await sendConfirmationEmail(
@@ -29,8 +28,7 @@ const homeService = async (req) => {
     );
     return { details: newHomeService, user: req.email };
   } catch (error) {
-    console.log(error);
-    throw error;
+    throw error.message;
   }
 };
 module.exports = homeService;
