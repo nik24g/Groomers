@@ -13,6 +13,10 @@ const showTimmings = async (req) => {
         slot_isExpire: false,
         slot_date: date,
     }).select("-_id slot_uuid slot_time");
+    // checking is there any slots or not, if there is no slots then we will send empty array but if is there any slots then we will moov forward in the logic
+    if(dbSlots.length <= 0){
+        return successResponse(200, messages.success.SUCCESS, dbSlots);
+    }
     // Current time is 2:12 PM
     // const currentTime = moment('9:39 PM', 'h:mm A');
     const currentTime = moment();

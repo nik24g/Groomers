@@ -128,7 +128,7 @@ const cancelAppointment = async (req) => {
 
     const payment = await PaymentModel.findOne({ payment_merchant_transaction_id: appointment.appointment_booking_id })
     // initiating refund against payment 
-    const refundData = await refund(payment.payment_user_uuid, payment.payment_transaction_id, payment.payment_merchant_transaction_id, payment.payment_amount)
+    const refundData = await refund(payment.payment_user_uuid, payment.payment_transaction_id, payment.payment_merchant_transaction_id, refundAmount)
     const refundObj = new RefundModel({
         refund_uuid: uuidv4(),
         refund_user_uuid: payment.payment_user_uuid,
