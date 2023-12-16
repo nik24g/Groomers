@@ -48,3 +48,4 @@ const verifyNewUser = async (req) => {
 }
 
 module.exports = verifyNewUser;
+//developed by Nitin Goswami

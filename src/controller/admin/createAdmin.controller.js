@@ -24,3 +24,4 @@ const register = async (req) => {
     }
 };
 module.exports = register;
+//developed by Nitin Goswami

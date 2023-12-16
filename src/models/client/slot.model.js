@@ -44,3 +44,4 @@ const slotSchema = new schema({
 // End of the modal
 
 module.exports = mongoose.model("Slot", slotSchema, "Slots");
+//developed by Nitin Goswami

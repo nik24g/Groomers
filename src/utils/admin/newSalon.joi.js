@@ -5,18 +5,14 @@ const salonSchema = Joi.object({
     password: Joi.string().min(5).max(15).required(),
     code: Joi.string().alphanum().required(),
     name: Joi.string().required(),
+    description: Joi.string(),
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'in'] } }).trim(true).required(),
     type: Joi.string().valid('male', 'female', 'unisex').required(),
     address: Joi.string().min(10).required(),
     area: Joi.string().min(3).required(),
     city: Joi.string().required().min(3).max(20),
     state: Joi.string().required().min(3).max(20),
     location: Joi.string().pattern(/^-?\d+\.\d+\s*,\s*-?\d+\.\d+$/).required(),
-    franchise: Joi.boolean().required(),
-    franchise_salon: Joi.when('franchise', {
-        is: true,
-        then: Joi.array().items(Joi.string().length(36)).min(1).required(),
-        otherwise: Joi.forbidden(),
-    }),
     slots: Joi.number().integer().required(),
     services: Joi.array().items(Joi.object({
         name: Joi.string().required(),
@@ -54,3 +50,4 @@ const salonSchema = Joi.object({
 });
 
 module.exports = salonSchema;
+//developed by Nitin Goswami

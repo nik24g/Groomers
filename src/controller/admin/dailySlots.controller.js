@@ -30,3 +30,4 @@ const generateDailySlots = async (req)=>{
 }
 
 module.exports = generateDailySlots
+//developed by Nitin Goswami

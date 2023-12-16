@@ -29,6 +29,9 @@ const appointmentSchema = new schema({
     appointment_user_phone: {
         type: String,
     },
+    appointment_user_email: {
+        type: String,
+    },
     appointment_slot_uuids: [
         {
             type: String,
@@ -121,6 +124,9 @@ const appointmentSchema = new schema({
         type: String,
         required: true
     },
+    appointment_other_charges: {
+        type: String
+    },
     appointment_is_reappointment: {
         type: Boolean,
         default: false
@@ -141,3 +147,4 @@ const appointmentSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("appointment", appointmentSchema, "appointments");
+//developed by Nitin Goswami

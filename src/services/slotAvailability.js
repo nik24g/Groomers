@@ -12,3 +12,4 @@ const isSlotsAvailable = async (slotUuids) =>{
 }
 
 module.exports = {isSlotsAvailable}
+//developed by Nitin Goswami

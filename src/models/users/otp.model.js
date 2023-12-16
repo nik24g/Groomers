@@ -38,3 +38,4 @@ const otpSchema = new schema({
 // End of the modal
 
 module.exports = mongoose.model("Otp", otpSchema, "OTPs");
+//developed by Nitin Goswami

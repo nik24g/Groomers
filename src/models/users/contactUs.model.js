@@ -29,3 +29,4 @@ const contactSchema = new schema({
 // End of the modal
 
 module.exports = mongoose.model("contact", contactSchema, "contacts");
+//developed by Nitin Goswami

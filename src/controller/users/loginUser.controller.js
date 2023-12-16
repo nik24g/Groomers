@@ -13,7 +13,7 @@ const userLogin = async (req) => {
   if (!user) return errorResponse(404, messages.error.USER_NOT_FOUND, {});
   if (!otpData) return errorResponse(406, messages.error.NO_OTP, {});
   if (otpData.otp_expireAt < Date.now()) {
-    return successResponse(205, messages.success.OTP_EXPIRED, {});
+    return successResponse(400, messages.success.OTP_EXPIRED, {});
   } else {
     // if not expired then check whether the otp is same or not
     if (otpData.otp_count < 3) {
@@ -56,3 +56,4 @@ const userLogin = async (req) => {
   }
 };
 module.exports = userLogin;
+//developed by Nitin Goswami

@@ -33,3 +33,4 @@ const userSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("user", userSchema, "users");
+//developed by Nitin Goswami

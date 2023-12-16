@@ -49,3 +49,4 @@ const paymentSchema = new schema({
 // End of the modal
 
 module.exports = mongoose.model("payment", paymentSchema, "payments");
+//developed by Nitin Goswami

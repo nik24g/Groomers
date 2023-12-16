@@ -1,3 +1,7 @@
+// Groomer project started in month of july in 2023
+// Projected first version finished in 30/11/2023
+// Originated and First version is only developed by Nitin Goswami
+// 7999676443 || nitingoswami1900@gmail.com || www.nitingoswami.xyz
 const express = require("express");
 const app = express();
 require("dotenv").config();
@@ -39,3 +43,5 @@ app.use("/payment", paymentRouter);
 app.listen(port, () => {
   console.log(`Server is running on port ${port} successfully`);
 });
+
+//developed by Nitin Goswami

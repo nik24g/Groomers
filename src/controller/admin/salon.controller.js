@@ -45,4 +45,31 @@ const salonCode = async (req) => {
         return successResponse(200, messages.success.SUCCESS, {salonCode: newSalonCode})
     }
 }
-module.exports = {deleteSalonBySalonId, toggleSalon, salonCode}
+
+const toggleSalonRecommend = async (req, res) => {
+    const salonCode = req.body.salon_code
+    const salon = await SalonModel.findOne({salon_code: salonCode})
+    if(salon){
+        if(salon.salon_is_recommended){
+            salon.salon_is_recommended = false
+            await salon.save()
+            return successResponse(200, messages.success.SALON_NOT_RECOMMENDED, {})
+        }
+        else{
+            salon.salon_is_recommended = true
+            await salon.save()
+            return successResponse(200, messages.success.SALON_RECOMMENDED, {})
+        }
+    }
+    else{
+        return errorResponse(404, messages.error.NOT_FOUND, {})
+    }
+}
+
+const recommendedSalonsCode = async (req, res) => {
+    const city = req.query.city || process.env.DEFAULT_CITY
+    const salons = await SalonModel.find({salon_city: city, salon_is_recommended: true}).select("-_id salon_code salon_uuid")
+    return successResponse(200, messages.success.SUCCESS, salons)
+}
+module.exports = {deleteSalonBySalonId, toggleSalon, salonCode, toggleSalonRecommend, recommendedSalonsCode}
+//developed by Nitin Goswami

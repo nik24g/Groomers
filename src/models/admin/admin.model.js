@@ -28,3 +28,4 @@ const adminSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("admin", adminSchema, "admins");
+//developed by Nitin Goswami

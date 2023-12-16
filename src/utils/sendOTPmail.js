@@ -54,3 +54,4 @@ const sendotpmail = async (user) => {
 }
 
 module.exports = sendotpmail
+//developed by Nitin Goswami

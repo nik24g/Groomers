@@ -19,3 +19,4 @@ const getAllSalons = async (req)=>{
     return successResponse(200, messages.success.SUCCESS, salons)
 }
 module.exports = {getSalonById, getAllSalons};
+//developed by Nitin Goswami

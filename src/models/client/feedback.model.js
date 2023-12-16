@@ -12,17 +12,10 @@ const feedbackSchema = new schema({
     },
     feedback_user_uuid: {
         type: String,
-        required: true
+        required: true,
+        ref: 'user'
     },
     feedback_salon_uuid: {
-        type: String,
-        required: true
-    },
-    feedback_order_uuid: {
-        type: String,
-        required: true
-    },
-    feedback_service_or_combo_name: {
         type: String,
         required: true
     },
@@ -42,3 +35,4 @@ const feedbackSchema = new schema({
     { timestamps: true }
 );
 module.exports = mongoose.model("feedback", feedbackSchema, "feedbacks");
+//developed by Nitin Goswami

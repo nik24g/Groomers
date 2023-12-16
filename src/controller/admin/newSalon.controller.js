@@ -41,7 +41,7 @@ const addNewSalon = async (req) => {
     };
     return combo;
   });
-  const location = { type: "Point", coordinates: req.body.location.split(",") };
+  const location = { type: "Point", coordinates: [Number(req.body.location.split(",")[0]), Number(req.body.location.split(",")[1])] };
   const photosPath = req.files.map((file) => file.path);
 
   const salon = new SalonModel({
@@ -50,19 +50,19 @@ const addNewSalon = async (req) => {
     salon_password: req.body.password,
     salon_code: req.body.code,
     salon_name: req.body.name,
+    salon_email: req.body.email,
+    salon_description: req.body.description,
     salon_type: req.body.type,
     salon_address: req.body.address,
     salon_area: req.body.area,
     salon_city: req.body.city,
     salon_state: req.body.state,
     salon_location: location,
-    salon_franchise: req.body.franchise,
     salon_slots: req.body.slots_number,
     salon_services: services,
     salon_combo_services: combo_services,
     salon_opening_time: req.body.opening_time,
     salon_closing_time: req.body.closing_time,
-    // salon_lunch_time: req.body.lunch_time,
     salon_lunch_start_time: req.body.lunch_start_time,
     salon_lunch_end_time: req.body.lunch_end_time,
     salon_photos: photosPath,
@@ -75,11 +75,9 @@ const addNewSalon = async (req) => {
     salon_bank_account_number: req.body.bank_account_number,
     salon_bank_IFSC_code: req.body.bank_IFSC_code,
   });
-  if(req.body.franchise == "true"){
-    salon.salon_franchise_list = JSON.parse(req.body.franchise_salon)
-  }
   const response = await salon.save();
   return successResponse(201, messages.success.SALON_ADDED, { response });
 };
 
 module.exports = addNewSalon;
+//developed by Nitin Goswami

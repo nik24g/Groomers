@@ -11,8 +11,9 @@ const moment = require("moment");
 const { initiatePayment } = require("../payment.controller")
 const RefundModel = require("../../models/users/refund.model")
 const { refund } = require("../../services/refund")
-const {increaseSlotsCount} = require("../../services/updateSlot")
-const {sendConfirmationEmail} = require("../../services/email.service")
+const { increaseSlotsCount } = require("../../services/updateSlot")
+const { sendConfirmationEmail } = require("../../services/email.service")
+const { bookingId } = require("../../services/id")
 
 // note: we will not subtract slot count or sitting count untill payment is complete
 // if payment fails then we will not subtract count but if payment success then we will subtract it.
@@ -32,7 +33,8 @@ const newAppointment = async (req) => {
     const isGuestAppointment = req.body.is_guest_appointment || false
     const guestFullName = req.body.full_name
     const guestMobile = req.body.mobile
-    const appointmentBookingId = uuidv4()
+    const guestEmail = req.body.email
+    const appointmentBookingId = await bookingId()
 
     const salon = await SalonModel.findOne({ salon_uuid: receivedSalonUuid })
     // getting services or combos that user selected 
@@ -73,6 +75,7 @@ const newAppointment = async (req) => {
         appointment_date: date,
         appointment_user_phone: guestMobile || req.mobile,
         appointment_user_full_name: guestFullName || req.fullName,
+        appointment_user_email: guestEmail || req.email,
         appointment_status: "pending",
         appointment_original_price: totalOriginalPrice,
         appointment_discounted_price: totalDiscountedPrice,
@@ -93,6 +96,7 @@ const newAppointment = async (req) => {
         payment_status: "initiated",
         payment_code: payment.code
     })
+    // console.log(payment);
     await newPayment.save()
     return successResponse(201, messages.success.APPOINTMENT_INITIATED, { order: payment })
 }
@@ -124,7 +128,7 @@ const cancelAppointment = async (req) => {
 
     const payment = await PaymentModel.findOne({ payment_merchant_transaction_id: appointment.appointment_booking_id })
     // initiating refund against payment 
-    const refundData = await refund(payment.payment_user_uuid, payment.payment_transaction_id, payment.payment_merchant_transaction_id, payment.payment_amount)
+    const refundData = await refund(payment.payment_user_uuid, payment.payment_transaction_id, payment.payment_merchant_transaction_id, refundAmount)
     const refundObj = new RefundModel({
         refund_uuid: uuidv4(),
         refund_user_uuid: payment.payment_user_uuid,
@@ -140,7 +144,7 @@ const cancelAppointment = async (req) => {
     await appointment.save()
     // after initiating refund we need to update slot availability because of appointment cancellation one slot is now available for other users
     await increaseSlotsCount(appointment.appointment_slot_uuids)
-    await sendConfirmationEmail(req.email, messages.subject.APPOINTMENT_CANCEL, "<h1>your appointment is now cancelled</h1>")
+    await sendConfirmationEmail(appointment.appointment_user_email, messages.subject.APPOINTMENT_CANCEL, "<h1>your appointment is now cancelled</h1>")
     return successResponse(200, messages.success.APPOINTMENT_CANCEL, {})
 }
 
@@ -150,7 +154,7 @@ const reScheduleAppointment = async (req) => {
     const slotUuids = req.slotUuids
     const timing = req.body.timing
     const date = req.body.date
-    const appointmentBookingId = uuidv4()
+    const appointmentBookingId = await bookingId()
 
     const appointment = await AppointmentModel.findOne({ appointment_uuid: appointmentUuid })
 
@@ -180,6 +184,7 @@ const reScheduleAppointment = async (req) => {
         appointment_booking_id: appointmentBookingId,
         appointment_is_guest: appointment.appointment_is_guest,
         appointment_user_uuid: appointment.appointment_user_uuid,
+        appointment_user_email: appointment.appointment_user_email,
         appointment_salon_uuid: appointment.appointment_salon_uuid,
         appointment_slot_uuids: slotUuids,
         appointment_duration: appointment.appointment_duration,
@@ -192,7 +197,7 @@ const reScheduleAppointment = async (req) => {
         appointment_status: "pending",
         appointment_previous_payment: appointment.appointment_previous_payment,
         appointment_subtotal: appointment.appointment_subtotal,
-        appointment_other_charges: JSON.stringify({"rescheduleCharge": rescheduleCharge}),
+        appointment_other_charges: JSON.stringify({ "rescheduleCharge": rescheduleCharge }),
         appointment_payment_status: "pending"
     })
     await newAppointment.save()
@@ -215,42 +220,101 @@ const reScheduleAppointment = async (req) => {
 
 const appointments = async (req) => {
     const { status, startDate, endDate, page = 1, limit = 10 } = req.query;
-    const filter = {
-        appointment_user_uuid: req.uuid
+
+    // Initial match stage with the user's UUID
+    const matchStage = {
+        $match: {
+            appointment_user_uuid: req.uuid
+        }
+    };
+
+    // Additional match stages based on filters
+    if (status) {
+        matchStage.$match.appointment_status = status;
     }
-    // adding status filter 
-    if (status){
-        filter.appointment_status = status
-    }
-    // adding date range filter 
+
     if (startDate && endDate) {
-        // Parse the date input if needed, assuming it's already in "DD/MM/YYYY" format
         const parsedStartDate = startDate;
         const parsedEndDate = endDate;
 
-        filter.appointment_date = {
+        matchStage.$match.appointment_date = {
             $gte: parsedStartDate,
             $lte: parsedEndDate,
         };
     }
-    // Count total appointments
-    const totalAppointments = await AppointmentModel.countDocuments(filter);
 
-    const options = {
-        skip: (page - 1) * limit,
-        limit: parseInt(limit),
-        select: {
-            _id: 0,
-            __v: 0,
-            createdAt: 0,
-            updatedAt: 0,
-            appointment_is_reappointment: 0,
+    // Aggregation pipeline with $lookup stage
+    const pipeline = [
+        matchStage,
+        {
+            $sort: { createdAt: -1 }
         },
-        sort: { createdAt: -1 }
-    };
+        {
+            $skip: (page - 1) * limit
+        },
+        {
+            $limit: parseInt(limit)
+        },
+        {
+            $lookup: {
+                from: 'salons', // Replace with the actual collection name
+                localField: 'appointment_salon_uuid',
+                foreignField: 'salon_uuid',
+                as: 'salon'
+            }
+        },
+        {
+            $unwind: '$salon'
+        },
+        {
+            $project: {
+                _id: 0,
+                __v: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                'salon._id': 0,
+                'salon.__v': 0,
+                'salon.createdAt': 0,
+                'salon.updatedAt': 0,
+                'salon.salon_password': 0,
+                'salon.salon_description': 0,
+                'salon.salon_email': 0,
+                'salon.salon_type': 0,
+                'salon.salon_address': 0,
+                'salon.salon_area': 0,
+                'salon.salon_state': 0,
+                'salon.salon_slots': 0,
+                'salon.salon_services': 0,
+                'salon.salon_combo_services': 0,
+                'salon.salon_opening_time': 0,
+                'salon.salon_closing_time': 0,
+                'salon.salon_lunch_start_time': 0,
+                'salon.salon_lunch_end_time': 0,
+                'salon.salon_photos': 0,
+                'salon.salon_features': 0,
+                'salon.salon_languages': 0,
+                'salon.salon_owner_name': 0,
+                'salon.salon_owner_mobile': 0,
+                'salon.salon_owner_pancard_number': 0,
+                'salon.salon_bank_name': 0,
+                'salon.salon_bank_account_number': 0,
+                'salon.salon_bank_IFSC_code': 0,
+                'salon.salon_block_dates': 0,
+                'salon.salon_isActive': 0,
+                'salon.salon_is_recommended': 0
+            }
+        }
+        
+    ];
 
-    const appointments = await AppointmentModel.find(filter, null, options);
-    return successResponse(200, messages.success.SUCCESS, { appointments, totalAppointments})
-    
-}
+    // Execute aggregation pipeline
+    const [appointments, totalAppointments] = await Promise.all([
+        AppointmentModel.aggregate(pipeline),
+        AppointmentModel.countDocuments(matchStage.$match)
+    ]);
+
+    // Return success response with the appointments and total count
+    return successResponse(200, messages.success.SUCCESS, { appointments, totalAppointments });
+};
+
 module.exports = { newAppointment, cancelAppointment, reScheduleAppointment, appointments }

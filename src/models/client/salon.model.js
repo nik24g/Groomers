@@ -28,6 +28,13 @@ const salonSchema = new schema({
         type: String,
         required: true,
     },
+    salon_email: {
+        type: String,
+        required: true,
+    },
+    salon_description: {
+        type: String
+    },
     salon_type: {
         type: String,
         required: true
@@ -50,15 +57,6 @@ const salonSchema = new schema({
         type: { type: String },
         coordinates: []
     },
-    salon_franchise: {
-        type: Boolean,
-        required: true,
-    },
-    salon_franchise_list: [
-        {
-            type: String
-        }
-    ],
     salon_slots: {
         type: String,
         required: true,
@@ -187,8 +185,13 @@ const salonSchema = new schema({
     salon_isActive: {
         type: Boolean,
         default: true
+    },
+    salon_is_recommended: {
+        type: Boolean,
+        default: false
     }
 },
     { timestamps: true }
 );
 module.exports = mongoose.model("salon", salonSchema, "salons");
+//developed by Nitin Goswami
