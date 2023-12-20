@@ -13,6 +13,7 @@ const loginUser = require("../controller/users/loginUser.controller");
 const loginJoiValidator = require("../middleware/users/login.joi.validator");
 const showTimming = require("../controller/users/showTimming.controller");
 const homeService = require("../controller/users/homeService.controller.js");
+
 const {
   createWishList,
   getWishList,
@@ -37,6 +38,7 @@ const rescheduleValidator = require("../middleware/users/reschedule.validation")
 const {
   salonsByCity,
   salonByUuid,
+  recommendedSalonsCode,
 } = require("../controller/users/salon.controller");
 const { user } = require("../controller/users/user.controller.js");
 
@@ -291,18 +293,12 @@ router.get("/feedback/getFeedback", async (req, res) => {
     return res.status(500).json(errorResponse(500, messages.error.WRONG));
   }
 });
-router.get("/homeService", tokenAuthentication, async (req, res) => {
+router.post("/homeService", tokenAuthentication, async (req, res) => {
   try {
-    const homeService = new HomeServiceModel({
-      home_uuid: uuidv4(),
-      home_email: req.email,
-      home_mobile: req.mobile,
-    });
-    await homeService.save();
-    return res.send(successResponse(201, messages.success.SUCCESS, {}));
+    const newUser = await homeService(req);
+    return res.send(successResponse(201, messages.success.SUCCESS, newUser));
   } catch (error) {
-    console.log(error);
-    return res.status(500).json(errorResponse(500, messages.error.WRONG));
+    res.send(errorResponse(409, error));
   }
 });
 router.post("/contactUs", async (req, res) => {
@@ -318,6 +314,16 @@ router.post("/contactUs", async (req, res) => {
     });
     await contact.save();
     return res.send(successResponse(201, messages.success.SUCCESS, {}));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(errorResponse(500, messages.error.WRONG));
+  }
+});
+
+router.get("/recommended-salon-code", async (req, res) => {
+  try {
+    const response = await recommendedSalonsCode(req);
+    return res.status(response.code).json(response);
   } catch (error) {
     console.log(error);
     return res.status(500).json(errorResponse(500, messages.error.WRONG));
