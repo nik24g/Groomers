@@ -76,7 +76,7 @@ const error = {
 }
 
 const subject = {
-    APPOINTMENT_CANCEL: "Groomer Appointment cancellation.",
+    APPOINTMENT_CANCEL: "Groomer Appointment Cancellation.",
     APPOINTMENT_BOOKED: "Groomer Appointment Confirmation.",
     APPOINTMENT_RESCHEDULED: "Groomer Appointment Rescheduled.",
     PAYMENT_FAILED: "Payment is failed.",
