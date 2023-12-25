@@ -43,6 +43,9 @@ const homeSchema = new schema(
     suggestions: {
       type: String,
     },
+    totalPrice: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

@@ -14,6 +14,7 @@ const homeService = async (req) => {
       mobileNumber: req.body.mobileNumber,
       fullAddress: req.body.fullAddress,
       suggestions: req.body.suggestions,
+      totalPrice: req.body.totalPrice,
     });
     await newHomeService.save();
     await sendConfirmationEmail(
@@ -23,9 +24,9 @@ const homeService = async (req) => {
       `Hi ${req.body.fullName} your appointment is successfully booked for ${req.body.appointmentTime} on ${req.body.appointmentDate} . Thank You !`
     );
     await sendConfirmationEmail(
-      "shanupl542011@gmail.com",
+      "groomeruniverse@gmail.com",
       messages.subject.APPOINTMENT_BOOKED,
-      `Home service appointment is booked by <br><br> Fullname :- ${req.body.fullName} <br>Appointment date :- ${req.body.appointmentDate} <br> Appointment time :- ${req.body.appointmentTime} <br> Selected services :- ${req.body.selectedServices} <br> Full address :- ${req.body.fullAddress} <br> Mobile number :- ${req.body.mobileNumber} <br> Gender :- ${req.body.targetGender}<br> Suggestions :- ${req.body.suggestions}. <br> Thank You !`
+      `Home service appointment is booked by <br><br> Fullname :- ${req.body.fullName} <br>Appointment date :- ${req.body.appointmentDate} <br> Appointment time :- ${req.body.appointmentTime} <br> Selected services :- ${req.body.selectedServices} <br> Full address :- ${req.body.fullAddress} <br> Mobile number :- ${req.body.mobileNumber} <br> Gender :- ${req.body.targetGender}<br> Suggestions :- ${req.body.suggestions}<br> Total Price :- ₹${req.body.totalPrice}. <br> Thank You !`
     );
     return { details: newHomeService, user: req.email };
   } catch (error) {
