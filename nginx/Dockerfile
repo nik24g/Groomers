@@ -7,5 +7,4 @@ WORKDIR /opt/app
 RUN ls -la
 COPY ./frontend /opt/app
 RUN npm i
-RUN ls -la
 RUN npm run build
