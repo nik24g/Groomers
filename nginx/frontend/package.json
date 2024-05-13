@@ -10,9 +10,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "vcp-cal-components": "^1.0.4",
-    "vcp-github-components": "^0.1.5",
-    "vcp-react-components": "^1.1.5",
     "vcp-test": "^1.0.6",
     "web-vitals": "^2.1.4"
   },
