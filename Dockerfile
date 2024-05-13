@@ -1,7 +1,7 @@
 FROM node:18-alpine
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
-COPY public ./public
+RUN mkdir public
 COPY src ./src
 RUN ls -la
 COPY package.json ./
