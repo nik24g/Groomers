@@ -21,13 +21,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-/practice.js
-/.env
-.env
-/public
-/clipboard.txt
-
-.npmrc
-practice.js
-clipboard.txt

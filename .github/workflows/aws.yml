@@ -1,0 +1,55 @@
+name: GitHub Actions Demo
+run-name: testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Show Working directory
+      run: pwd  
+    - name: Show git hub repo name
+      run: echo ${{ github.repository}}      
+    - name: Branch name
+      run: echo running on branch ${GITHUB_REF##*/}
+    - name: get epository name
+      run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+    - name: Show Working directory
+      run: ls -la  
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Show Working directory
+      run: ls -ltr  
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build, tag, and push node image to Amazon ECR
+      id: build-groomer-node-img
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: groomer-test-images
+        IMAGE_TAG: groomer-node-img
+      run: |
+        ls -ltr
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Build, tag, and push groomer nginx image to Amazon ECR
+      id: build-groomer-nginx-img
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: groomer-test-images
+        IMAGE_TAG: groomer-nginx-img
+      run: |
+        ls -ltr
+        cd nginx
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+    
